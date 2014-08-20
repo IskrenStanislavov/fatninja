@@ -1,0 +1,10 @@
+animations: {
+	idle: [0],
+	stun: [1,18],
+	die: [19,45],
+	jump_up: [46],
+	jump_top: [47,49]
+	jump_down: [50],
+	jump_land: [51,54],
+	walk: [55,60]
+}
