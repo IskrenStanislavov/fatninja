@@ -9,15 +9,6 @@ require.config({
     baseUrl: 'js',
 });
 
-
-
-
-
-
 define(function(require) {
-	// var $ 			= require('libs/zepto.min'),
-		// createjs	= require('libs/easeljs-NEXT.combined')
-	var preloader	= require('preloader');
-	preloader(window.game);
-
+	require('manager')(window.game);
 });
