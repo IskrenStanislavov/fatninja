@@ -3,10 +3,12 @@ define(function(require){
 
     var CustomLoader    = require("libs/loader");
     var Main            = require("js/background");
+    var Character       = require("js/character");
     var Stage           = require("libs/stage");
 
     new CustomLoader({resources:[
         "images/decor.png",
+        "images/ninja.json",
         ], onComplete: function(){
             var stage = new Stage({
                 debugBG: true,
@@ -14,7 +16,8 @@ define(function(require){
                 stageColor: "black",
                 canvasId: "game"
             });
-            stage.addChild(new Main());
+            window.decor = stage.addChild(new Main());
+            window.character = stage.addChild(new Character());
             window.stage = stage;
         }
     });

@@ -18,9 +18,9 @@ define(function(require) {
         PIXI.Stage.call(this, this.color);
 
 
-        if ( settings && settings.debugBG ) {
-            this.addChild(new PIXI.Graphics().beginFill("red",1.0).drawRect(0,0,100,200).endFill());
-        }
+        // if ( settings && settings.debugBG ) {
+        //     this.addChild(new PIXI.Graphics().beginFill("red",1.0).drawRect(0,0,100,200).endFill());
+        // }
 
         this.fittable = null;
         this.autoFitListeners();
@@ -50,8 +50,8 @@ define(function(require) {
             return;
         }
         this.fittable = {
-            W: this.getChildAt(-1).width,
-            H: this.getChildAt(-1).height,
+            W: this.getChildAt(0).width,
+            H: this.getChildAt(0).height,
         };
         if ( !this.fittable.W || !this.fittable.H ){
             return;
