@@ -1,5 +1,4 @@
 define(function(require){
-    require("libs/zepto.min");
     require("libs/functions");
 
     var CustomLoader    = require("libs/loader");
