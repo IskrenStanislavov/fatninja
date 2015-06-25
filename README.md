@@ -7,5 +7,8 @@ TO DO:
 
 main game
 
+read:
+http://bit.ly/1Cw0VJt
+
 secrets from
 http://brainchilddesign.com/Bottom.php?Page=Games&SubPage=JnBSecrets
