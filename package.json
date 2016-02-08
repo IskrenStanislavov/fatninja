@@ -1,0 +1,26 @@
+{
+  "name": "ninja",
+  "version": "1.0.0",
+  "description": "The Game Fat Ninja",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "browser-sync": "^2.10.0",
+    "gulp": "^3.9.0",
+    "hxpixijs": "0.0.25"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IskrenStanislavov/ninja.git"
+  },
+  "author": "Nerksi",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/IskrenStanislavov/ninja/issues"
+  },
+  "private": true,
+  "homepage": "https://github.com/IskrenStanislavov/ninja#readme"
+}
