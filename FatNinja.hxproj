@@ -8,13 +8,14 @@
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="JavaScript" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
+    <class path="node_modules\hxpixijs\src" />
     <class path="src" />
   </classpaths>
   <!-- Build options -->
@@ -36,7 +37,7 @@
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <!-- example: <hidden path="..." /> -->
+    <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />
