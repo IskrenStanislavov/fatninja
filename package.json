@@ -22,6 +22,7 @@
   "dependencies": {
     "gulp": "^3.9.1",
     "vorlon": "^0.2.1",
-    "your-game-name-here": "git+https://github.com/IskrenStanislavov/node-online-game-template.git"
+    "your-game-name-here": "git+https://github.com/IskrenStanislavov/node-online-game-template.git",
+    "zepto": "^1.0.1"
   }
 }
