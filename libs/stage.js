@@ -1,6 +1,6 @@
 define(function(require) {
     var PIXI        = require("libs/pixi");
-    require('libs/zepto.min')
+    require('../node_modules/zepto/zepto.min');
 
     var Stage = function( settings ){
         this.renderer = PIXI.autoDetectRenderer(100, 100, {
