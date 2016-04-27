@@ -1,9 +1,9 @@
 define(function(require) {
-    var PIXI        = require("libs/pixi");
+    var PIXI        = require("PIXI");
     require('../node_modules/zepto/zepto.min');
 
     var Stage = function( settings ){
-        this.renderer = PIXI.autoDetectRenderer(100, 100, {
+        this.renderer = PIXI.autoDetectRenderer(1280, 920, {
             "view":document.getElementById((settings && settings.canvasId) || "game"),
             "clearBeforeRender":false,
             "transparent": false,
@@ -15,7 +15,7 @@ define(function(require) {
         document.body.appendChild(this.canvas);
 
         this.color = (settings && settings.stageColor) || "black";
-        PIXI.Stage.call(this, this.color);
+        PIXI.Container.call(this, this.color);
 
 
         // if ( settings && settings.debugBG ) {
@@ -28,7 +28,7 @@ define(function(require) {
     };
 
 
-    Stage.prototype = Object.create( PIXI.Stage.prototype );
+    Stage.prototype = Object.create( PIXI.Container.prototype );
 
     Stage.prototype._getChildAt = Stage.prototype.getChildAt;
 
@@ -42,7 +42,7 @@ define(function(require) {
     Stage.prototype.update = function(){
         this.resize();
         this.renderer.render(this);
-        requestAnimFrame(this.update.bind(this));
+        requestAnimationFrame(this.update.bind(this));
     };
 
     Stage.prototype.setAutoFit = function() {

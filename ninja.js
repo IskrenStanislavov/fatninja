@@ -1,8 +1,14 @@
+require.config({
+    baseUrl: './',
+    paths: {
+        PIXI: "../node_modules/pixi.js/bin/pixi"
+    }
+});
 define(function(require){
     require("libs/functions");
 
     var CustomLoader    = require("libs/loader");
-    var Main            = require("js/background");
+    // var Main            = require("js/background");
     var Character       = require("js/character");
     var Stage           = require("libs/stage");
 
@@ -16,7 +22,8 @@ define(function(require){
                 stageColor: "black",
                 canvasId: "game"
             });
-            window.decor = stage.addChild(new Main());
+            stage.addChild(PIXI.Sprite.fromFrame("images/decor.png"));
+            // window.decor = stage.addChild(new Main());
             window.character = stage.addChild(new Character());
             window.stage = stage;
         }

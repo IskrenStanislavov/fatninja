@@ -1,5 +1,5 @@
 define(function(require){
-    var PIXI        = require("libs/pixi");
+    var PIXI        = require("PIXI");
     var tileConfig  = require('sokoban/config/tiles');
 
     var GridPoint = function(column, row){

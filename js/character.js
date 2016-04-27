@@ -1,13 +1,13 @@
 define(function(require) {
-	var PIXI        = require("libs/pixi");
+	var PIXI        = require("PIXI");
 	var Animation   = require("libs/animation");
-	var Ninja = function(settings){
-		PIXI.DisplayObjectContainer.call(this);
+	var Character = function(settings){
+		PIXI.Container.call(this);
 		this.idle = this.addChild(PIXI.Sprite.fromFrame("idle/idle (1).png"));
 		this.idle.anchor.set(0.5,0.5);
-		this.animation = this.addChild(new CharacterAnimation());
+		// this.animation = this.addChild(new CharacterAnimation());
 	};
 
-	Ninja.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-	return Ninja;
+	Character.prototype = Object.create(PIXI.Container.prototype);
+	return Character;
 });

@@ -1,9 +1,10 @@
 define(function(require) {
-	var PIXI        = require("libs/pixi");
+	var PIXI        = require("PIXI");
 	var Background = function(){
-		PIXI.Sprite.call(this, PIXI.Texture.fromFrame("images/decor.png"));
+		PIXI.Container.call(this);
+		this.img = PIXI.Sprite.fromFrame("images/decor.png");
 	};
 
-	Background.prototype = Object.create(PIXI.Sprite.prototype);
+	Background.prototype = Object.create(PIXI.Container.prototype);
 	return Background;
 });
