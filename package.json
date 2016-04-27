@@ -1,0 +1,26 @@
+{
+  "name": "fatninja",
+  "version": "0.0.1",
+  "description": "Fat Ninja",
+  "main": "ninja.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IskrenStanislavov/ninja.git"
+  },
+  "keywords": [
+    "fatninja"
+  ],
+  "author": "Iskren Stanislavov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IskrenStanislavov/ninja/issues"
+  },
+  "homepage": "https://github.com/IskrenStanislavov/ninja#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "your-game-name-here": "git+https://github.com/IskrenStanislavov/node-online-game-template.git"
+  }
+}
