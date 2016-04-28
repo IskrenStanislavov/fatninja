@@ -7,16 +7,18 @@ require.config({
 define(function(require){
     require("libs/functions");
     require("PIXI");
-    require("libs/extendPIXI");
+    // require("libs/extendPIXI");
 
     var CustomLoader    = require("libs/loader");
     var Stage           = require("libs/stage");
     var Character       = require("js/character");
     var Ground          = require("js/ground");
+    var Clouds          = require("js/clouds");
     var Game = {};
     var d = 0;
     if (window.debug || 1){
         window.Game = Game;
+        // require("libs/pixi.draggable.min")
         // d = 10;
     }
 
@@ -45,13 +47,11 @@ define(function(require){
             Game.bg.visible = false;
             //TODO: make cloud animation
             Game.clouds = [
-                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_RIGHT)),
-                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_SMALL)),
-                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_LEFT)),
+                // stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_RIGHT)),
+                stage.addChild(new Clouds({frame:resources.CLOUD_LEFT,  position:{x:  0, y:0}, /*scale:{x:1,y:1}, pivot:{x:0,y:0}*/ })),
+                stage.addChild(new Clouds({frame:resources.CLOUD_SMALL, position:{x:437, y:0}, /*scale:{x:1,y:1}, pivot:{x:0,y:0}*/ })),
+                stage.addChild(new Clouds({frame:resources.CLOUD_RIGHT, position:{x:706, y:0}, /*scale:{x:1,y:1}, pivot:{x:0,y:0}*/ })),
             ];
-            Game.clouds[0].position.set(706, 0);
-            Game.clouds[1].position.set(437, 0);
-            Game.clouds[2].position.set(  0, 0);
 
             //TODO: make ground solid
             Game.ground = [ // sorted by x
@@ -65,7 +65,6 @@ define(function(require){
                 //main ground
                 stage.addChild(new Ground({frame: resources.GROUND_30, position: {x:  0, y:822}})), // bottom
             ];
-            // window.decor = stage.addChild(new Main());
             window.character = stage.addChild(new Character());
             window.stage = stage;
         }
