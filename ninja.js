@@ -6,28 +6,65 @@ require.config({
 });
 define(function(require){
     require("libs/functions");
+    require("PIXI");
+    require("libs/extendPIXI");
 
     var CustomLoader    = require("libs/loader");
-    // var Main            = require("js/background");
-    var Character       = require("js/character");
     var Stage           = require("libs/stage");
+    var Character       = require("js/character");
+    var Ground          = require("js/ground");
+    var Game = {};
+    var d = 0;
+    if (window.debug || 1){
+        window.Game = Game;
+        // d = 10;
+    }
 
     var resources = {
         "MAIN_DECOR"    : "images/decor.png",
         "CLOUD_RIGHT"   : "images/cloud01.png",
+        "CLOUD_SMALL"   : "images/cloud02.png",
+        "CLOUD_LEFT"    : "images/cloud03.png",
         "NINJA_SPRITE"  : "images/ninja.json",
+        "GROUND_3"      : "images/ground03.png",
+        "GROUND_8"      : "images/ground08.png",
+        "GROUND_30"     : "images/ground30.png",
     };
 
     new CustomLoader({resources:Object.values(resources), onComplete: function(){
             var stage = new Stage({
-                // debugBG: true,
+                sizes: {
+                    width: 1280,
+                    height: 860
+                },
                 contextMenu: false,
-                stageColor: "black",
+                stageColor: 0xBEDAFF,
                 canvasId: "game"
             });
-            // stage.addChild(new PIXI.Graphics()).beginFill()
-            stage.addChild(PIXI.Sprite.fromFrame(resources.MAIN_DECOR));
-            stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_RIGHT));
+            Game.bg = stage.addChild(PIXI.Sprite.fromFrame(resources.MAIN_DECOR));
+            Game.bg.visible = false;
+            //TODO: make cloud animation
+            Game.clouds = [
+                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_RIGHT)),
+                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_SMALL)),
+                stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_LEFT)),
+            ];
+            Game.clouds[0].position.set(706, 0);
+            Game.clouds[1].position.set(437, 0);
+            Game.clouds[2].position.set(  0, 0);
+
+            //TODO: make ground solid
+            Game.ground = [ // sorted by x
+                //small size
+                stage.addChild(new Ground({frame: resources.GROUND_3,  position: {x:  0, y:519}})), // most left
+                stage.addChild(new Ground({frame: resources.GROUND_3,  position: {x:163, y:225}})),
+                stage.addChild(new Ground({frame: resources.GROUND_3,  position: {x:778, y:616}})),
+                //medium size
+                stage.addChild(new Ground({frame: resources.GROUND_8,  position: {x:376, y:330}})), // in the middle
+                stage.addChild(new Ground({frame: resources.GROUND_8,  position: {x:968, y:412}})), // to the right
+                //main ground
+                stage.addChild(new Ground({frame: resources.GROUND_30, position: {x:  0, y:822}})), // bottom
+            ];
             // window.decor = stage.addChild(new Main());
             window.character = stage.addChild(new Character());
             window.stage = stage;
