@@ -12,17 +12,22 @@ define(function(require){
     var Character       = require("js/character");
     var Stage           = require("libs/stage");
 
-    new CustomLoader({resources:[
-        "images/decor.png",
-        "images/ninja.json",
-        ], onComplete: function(){
+    var resources = {
+        "MAIN_DECOR"    : "images/decor.png",
+        "CLOUD_RIGHT"   : "images/cloud01.png",
+        "NINJA_SPRITE"  : "images/ninja.json",
+    };
+
+    new CustomLoader({resources:Object.values(resources), onComplete: function(){
             var stage = new Stage({
-                debugBG: true,
+                // debugBG: true,
                 contextMenu: false,
                 stageColor: "black",
                 canvasId: "game"
             });
-            stage.addChild(PIXI.Sprite.fromFrame("images/decor.png"));
+            // stage.addChild(new PIXI.Graphics()).beginFill()
+            stage.addChild(PIXI.Sprite.fromFrame(resources.MAIN_DECOR));
+            stage.addChild(PIXI.Sprite.fromFrame(resources.CLOUD_RIGHT));
             // window.decor = stage.addChild(new Main());
             window.character = stage.addChild(new Character());
             window.stage = stage;
