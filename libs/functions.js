@@ -56,6 +56,11 @@ Array.prototype.shuffle = function(){
 	return result;
 };
 
+Object.values = Object.values || function(instance){
+	return Object.keys(instance).map(function(key){
+		return instance[key];
+	});
+};
 
 define(function(require){
 	return;
