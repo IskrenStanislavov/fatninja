@@ -15,6 +15,7 @@ define(function(require){
     var Ground          = require("js/ground");
     var Clouds          = require("js/clouds"); //TODO: animate
     var Skins           = require("js/skins");
+    var Config          = require("js/config");
 
     var Game = {};
     var d = 0;
@@ -68,11 +69,14 @@ define(function(require){
                 stage.addChild(new Ground({frame: resources.GROUND_30, position: {x:  0, y:822}})), // bottom
             ];
             //char1
-            window.characters = Skins.map(function(skinColor, index){
+            window.characters = Skins.map(function(skin, index){
                 var ninja = stage.addChild(new Character({
-                    skin:skinColor,
+                    skin:skin,
                 }));
-                ninja.position.set(400 + index*90,250);
+                var p = Config.ninjaPositions[skin.color];
+                // ninja.position.set(200 + index*134, 140 + index* 172);
+                ninja.position.set(p.x, p.y);
+                ninja.logPositions();
             });
         }
     });
