@@ -1,7 +1,7 @@
 define(function(require) {
 	var PIXI        = require("PIXI");
 	var Animation   = require("libs/animation");
-    var Config 		= require("js/config");
+    // var Config 		= require("js/config");
 
 	var Character = function(settings){
 		PIXI.Container.call(this);
