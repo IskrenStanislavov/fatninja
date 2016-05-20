@@ -101,12 +101,12 @@ var MV = function(startFrame, endFrame, url, tint){
 	};
 
 	Character.prototype.logPositions = function(){
-		console.warn(this.idle.getLocalBounds());
-		console.warn(this.idle.getBounds());
+		// console.warn(this.idle.getLocalBounds());
+		// console.warn(this.idle.getBounds());
 
-		console.warn(this.getLocalBounds());
-		console.warn(this.getBounds());
-		var bbox = this.getBounds();
+		// console.warn(this.getLocalBounds());
+		// console.warn(this.getBounds());
+		var bbox = this.getLocalBounds();
 		this.addChild(new PIXI.Graphics).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
 	};
 	return Character;
