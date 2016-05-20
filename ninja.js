@@ -30,10 +30,6 @@ var SKINS = [
         tint: 0x334433
     }
     ];
-var FRAMES = {
-    width: 134*2,
-    height: 172
-};
 define(function(require){
     require("libs/functions");
     require("PIXI");
