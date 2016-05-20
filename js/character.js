@@ -17,7 +17,6 @@ var MV = function(startFrame, endFrame, url, tint){
 		move = PIXI.Sprite.fromFrame(collect(startFrame, endFrame, url)[0]);
 	} else {
 		move = PIXI.extras.MovieClip.fromFrames(collect(startFrame, endFrame, url));
-		move.loop = false;
 	}
 	move.pivot.set(FRAMES.width*0.5, FRAMES.height*0.5);
 	move.visible = false;
@@ -33,35 +32,74 @@ var MV = function(startFrame, endFrame, url, tint){
 	var Character = function(settings){
 		PIXI.Container.call(this);
 		this.settings = settings;
-
-		//die
-		this.die = this.addChild(MV(1,27, "die/die (%s).png", settings.skin.tint));
-
-		//idle
-		this.idle = this.addChild(MV(1,1, "idle/idle (%s).png", settings.skin.tint));
-
-		//jump down
-		this.jump_down = this.addChild(MV(1,1, "jump_down/ninja_jump_down (%s).png", settings.skin.tint));
-
-		//land
-		this.jump_land = this.addChild(MV(1,4, "jump_land/land (%s).png", settings.skin.tint));
-
-		//jump over
-		this.jump_over = this.addChild(MV(1,3, "jump_over/jump_over (%s).png", settings.skin.tint));
-
-		//jump up
-		this.jump_up = this.addChild(MV(1,1, "jump_up/jump_up(%s).png", settings.skin.tint));
-
-		//stun
-		this.stun = this.addChild(MV(1,18, "stun/stun (%s).png", settings.skin.tint));
-
-		//walk
-		this.walk = this.addChild(MV(1,6, "walk/walk (%s).png", settings.skin.tint));
-		this.walk.visible = true;
-
+		this._state = null;
+		this.STATES = {};
+		this.initStateAnimations();
+		this.setState("idle");
 	};
 
 	Character.prototype = Object.create(PIXI.Container.prototype);
+
+	Character.prototype.initStateAnimations = function(){
+		//die
+		this.die = this.STATES.die = this.addChild(MV(1,27, "die/die (%s).png", this.settings.skin.tint));
+
+		//idle
+		this.idle = this.STATES.idle = this.addChild(MV(1,1, "idle/idle (%s).png", this.settings.skin.tint));
+
+		//jump down
+		this.jump_down = this.STATES.jump_down = this.addChild(MV(1,1, "jump_down/ninja_jump_down (%s).png", this.settings.skin.tint));
+
+		//land
+		this.jump_land = this.STATES.jump_land = this.addChild(MV(1,4, "jump_land/land (%s).png", this.settings.skin.tint));
+
+		//jump over
+		this.jump_over = this.STATES.jump_over = this.addChild(MV(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
+
+		//jump up
+		this.jump_up = this.STATES.jump_up = this.addChild(MV(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
+
+		//stun
+		this.stun = this.STATES.stun = this.addChild(MV(1,18, "stun/stun (%s).png", this.settings.skin.tint));
+
+		//walk
+		this.walk = this.STATES.walk = this.addChild(MV(1,6, "walk/walk (%s).png", this.settings.skin.tint));
+
+
+
+		//FSM
+		this.states = Object.keys(this.STATES);
+		this.FSM = {
+			null:["idle"],
+			"idle": ["jump_up", "walk"]
+		};
+	};
+
+	Character.prototype.checkStateTransition = function(newState){
+		var oldState = this._state;
+
+		if (this.FSM[oldState].indexOf(newState)>-1){
+			return true;
+		// } else if (oldState == newState){
+		// 	return true;
+		}
+		return false;
+	};
+
+	Character.prototype.setState = function(newState){
+		if (this.checkStateTransition(newState)){
+			this._state = newState;
+			var m = this.STATES[this._state];
+			m.visible = true;
+			m.play && m.play();
+		} else {
+			var msg = "Inappropriate state transition" + this._state + "->" + newState;
+			console.log(msg);
+			throw msg;
+		}
+
+	};
+
 	Character.prototype.logPositions = function(){
 		console.warn(this.idle.getLocalBounds());
 		console.warn(this.idle.getBounds());
@@ -70,8 +108,6 @@ var MV = function(startFrame, endFrame, url, tint){
 		console.warn(this.getBounds());
 		var bbox = this.getBounds();
 		this.addChild(new PIXI.Graphics).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
-		this.walk.loop = true;
-		this.walk.play();
 	};
 	return Character;
 });
