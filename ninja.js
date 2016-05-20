@@ -4,6 +4,32 @@ require.config({
         PIXI: "../node_modules/pixi.js/bin/pixi"
     }
 });
+var SKINS = [
+    {
+        color:"normal",
+        tint: 0xFFFFFF
+    },
+    {
+        color:"red",
+        tint: 0xFF0000
+    },
+    {
+        color:"green",
+        tint: 0x00FF00
+    },
+    {
+        color:"blue",
+        tint: 0x2222FF
+    },
+    {
+        color:"pink",
+        tint: 0x7722FF
+    },
+    {
+        color:"black",
+        tint: 0x334433
+    }
+    ];
 define(function(require){
     require("libs/functions");
     require("PIXI");
@@ -14,8 +40,8 @@ define(function(require){
     var Character       = require("js/character");
     var Ground          = require("js/ground");
     var Clouds          = require("js/clouds"); //TODO: animate
-    var Skins           = require("js/skins");
-    var Config          = require("js/config");
+    var Skins           = SKINS;//require("js/skins");
+    // var Config          = require("js/config");
 
     var Game = {};
     var d = 0;
@@ -69,13 +95,22 @@ define(function(require){
                 stage.addChild(new Ground({frame: resources.GROUND_30, position: {x:  0, y:822}})), // bottom
             ];
             //char1
-            window.characters = Skins.map(function(skin, index){
+            //TODO: place Characters automaticaly on the top of some ground.
+            var a = {
+                "0":new PIXI.Point(200, 140),
+                "1":new PIXI.Point(408, 245),
+                "2":new PIXI.Point( 40, 433),
+                "3":new PIXI.Point(810, 530),
+                "4":new PIXI.Point(1000, 326),
+                "5":new PIXI.Point(350, 735),
+                // "6":new PIXI.Point(1150, 735),
+            };
+            window.characters = Object.keys(a).map(function(skin, index){
+                skin = SKINS[index];
                 var ninja = stage.addChild(new Character({
                     skin:skin,
                 }));
-                var p = Config.ninjaPositions[skin.color];
-                // ninja.position.set(200 + index*134, 140 + index* 172);
-                ninja.position.set(p.x, p.y);
+                ninja.position.copy(a[index]);
                 ninja.logPositions();
             });
         }
