@@ -29,13 +29,19 @@ var MV = function(startFrame, endFrame, url, tint){
 	}
 	return move;
 };
+DIRECTIONS = {
+	Left:1,
+	Right:-1
+};
 	var Character = function(settings){
 		PIXI.Container.call(this);
 		this.settings = settings;
 		this._state = null;
+		this._direction = null;
 		this.STATES = {};
 		this.initStateAnimations();
 		this.setState("idle");
+		this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
 	};
 
 	Character.prototype = Object.create(PIXI.Container.prototype);
@@ -75,6 +81,14 @@ var MV = function(startFrame, endFrame, url, tint){
 		};
 	};
 
+	Character.prototype.getState = function(){
+		return this.STATES[this._state];
+	};
+
+	Character.prototype.setDirection = function(newDirection){
+		this._direction = this.getState().scale.x = newDirection;
+	};
+
 	Character.prototype.checkStateTransition = function(newState){
 		var oldState = this._state;
 
@@ -97,7 +111,6 @@ var MV = function(startFrame, endFrame, url, tint){
 			console.log(msg);
 			throw msg;
 		}
-
 	};
 
 	Character.prototype.logPositions = function(){
