@@ -112,7 +112,10 @@ define(function(require){
                 }));
                 ninja.position.copy(a[index]);
                 ninja.logPositions();
+                return ninja;
             });
+            window.characters[0].testScenario("walk_left");
+            window.characters[4].testScenario("walk_right");
         }
     });
 });

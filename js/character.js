@@ -29,19 +29,21 @@ var MV = function(startFrame, endFrame, url, tint){
 	}
 	return move;
 };
-DIRECTIONS = {
-	Left:1,
+DIRECTIONS = {//TODO: can hold the speeds as well
+	Left: 1,
+	Idle: 0,
 	Right:-1
 };
 	var Character = function(settings){
 		PIXI.Container.call(this);
 		this.settings = settings;
 		this._state = null;
-		this._direction = null;
+		this.facingDirection = null;
 		this.STATES = {};
 		this.initStateAnimations();
 		this.setState("idle");
 		this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
+
 	};
 
 	Character.prototype = Object.create(PIXI.Container.prototype);
@@ -75,18 +77,134 @@ DIRECTIONS = {
 
 		//FSM
 		this.states = Object.keys(this.STATES);
+		this.USER_TRIGGER_ACTIONS = ["walk", "jump"];
+		this.ACTIONS = {
+			"idle": {
+				animation: "idle",//ninja
+				directions:{
+					idle: DIRECTIONS.Idle
+				}
+			},
+			"walk": {
+				animation: "walk",//ninja
+				directions: {//cannot walk and stay idle
+					left: DIRECTIONS.Left,
+					reft: DIRECTIONS.Right,
+				}
+			},
+			"jump": {
+				animation: "jump_up",//ninja
+				next : function(args){return "fall"},
+				directions: {
+					idle: DIRECTIONS.Idle,
+					left: DIRECTIONS.Left,
+					reft: DIRECTIONS.Right,
+				}
+			},
+			"fall": {
+				animation: "jump_down",//ninja
+				next : function(args){
+					if (args && !!args.under){
+						args.under.hit();
+						return "splash";
+					}
+					return "land";
+				},
+				directions: {
+					idle: DIRECTIONS.Idle,
+					left: DIRECTIONS.Left,
+					reft: DIRECTIONS.Right,
+				}
+			},
+			"land": {
+				animation: "jump_land",//ninja
+				directions: {
+					idle: DIRECTIONS.Idle,
+					left: DIRECTIONS.Left,
+					reft: DIRECTIONS.Right,
+				}
+			},
+			"splash": {
+				animation: "jump_over",//ninja
+				next : function(args){return ["stun", "die"][0]},
+				directions: {
+					idle: DIRECTIONS.Idle,
+				}
+			},
+			"hit": {
+				state: "transit",//empty
+				animation: undefined,//empty
+				next : function(args){
+					if (!!args.self.hasLives()){
+						return "stun";
+					}
+					return "die";
+				},
+				directions: {
+					idle: DIRECTIONS.Idle,
+				}
+			},
+			"stun": {
+				animation: "stun",
+				next : function(args){
+					if (!args.self.hasMove()){
+						return "walk";
+					}
+					return "idle";
+				},
+				directions: {
+					idle: DIRECTIONS.Idle,
+				}
+			},
+			"die": {
+				animation: "die",
+				next : function(args){return "rebirth"},
+				directions: {
+					idle: DIRECTIONS.Idle,
+				}
+			},
+			"rebirth": {
+				animation: "null",
+				next : function(args){return "idle"},
+				directions: {
+					idle: DIRECTIONS.Idle,
+				}
+			},
+		};
 		this.FSM = {
 			null:["idle"],
-			"idle": ["jump_up", "walk"]
+			"die":["null"],
+			"idle": ["jump_up", "walk", "stun", "die"],
+			"jump_down": ["jump_over", "jump_land"],
+			"jump_land": ["idle", "walk"],
+			"jump_over": ["idle", "walk"],
+			"jump_up": ["jump_down", ],
+			"stun": ["stun", "idle", "walk", "jump_up"],
+			"walk": [
+				"die",
+				"idle",
+				"jump_down",
+				"jump_land",
+				"jump_over",
+				"jump_up",
+				"stun",
+				"walk",
+			],
+
 		};
 	};
 
-	Character.prototype.getState = function(){
+	Character.prototype.getStateAnimation = function(){
 		return this.STATES[this._state];
 	};
 
 	Character.prototype.setDirection = function(newDirection){
-		this._direction = this.getState().scale.x = newDirection;
+		this.facingDirection = newDirection;
+		this.updateDirection();
+	};
+
+	Character.prototype.updateDirection = function(){
+		this.getStateAnimation().scale.x = this.facingDirection;
 	};
 
 	Character.prototype.checkStateTransition = function(newState){
@@ -102,8 +220,13 @@ DIRECTIONS = {
 
 	Character.prototype.setState = function(newState){
 		if (this.checkStateTransition(newState)){
+			if (this._state != newState && this._state != null){
+				//hide stale state animation
+				this.getStateAnimation().visible = false;
+			}
 			this._state = newState;
-			var m = this.STATES[this._state];
+			this.updateDirection();
+			var m = this.getStateAnimation();
 			m.visible = true;
 			m.play && m.play();
 		} else {
@@ -121,6 +244,24 @@ DIRECTIONS = {
 		// console.warn(this.getBounds());
 		var bbox = this.getLocalBounds();
 		this.addChild(new PIXI.Graphics).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
+	};
+	Character.prototype.testScenario = function(sc){
+		switch(sc) {
+			case "walk_left":
+				this.setDirection(DIRECTIONS.Left);
+				this.setState("walk");
+			break;
+			case "walk_right":
+				this.setDirection(DIRECTIONS.Right);
+				this.setState("walk");
+			break;
+			case "jump_right":
+				this.setDirection(DIRECTIONS.Right);
+				this.setState("jump");
+			break;
+			default:
+			return;
+		}
 	};
 	return Character;
 });
