@@ -1,7 +1,8 @@
 require.config({
     baseUrl: './',
     paths: {
-        PIXI: "../node_modules/pixi.js/bin/pixi"
+        PIXI: "../node_modules/pixi.js/bin/pixi",
+        GSAP:"../node_modules/gsap/src/minified/TweenMax.min"
     }
 });
 var SKINS = [
@@ -114,8 +115,14 @@ define(function(require){
                 ninja.logPositions();
                 return ninja;
             });
-            window.characters[0].testScenario("walk_left");
-            window.characters[4].testScenario("walk_right");
+            // window.characters[0].testScenario("jump");
+
+            window.characters[0].testScenario("jump:idle");
+            window.characters[1].testScenario("jump:right");
+            window.characters[2].testScenario("jump:left");
+            window.characters[3].testScenario("walk:left");
+            window.characters[4].testScenario("walk:right");
+            window.characters[5].testScenario("walk:right");
         }
     });
 });

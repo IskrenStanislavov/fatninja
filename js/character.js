@@ -1,5 +1,6 @@
 define(function(require) {
 	var PIXI        = require("PIXI");
+	var GSAP        = require("GSAP");
 	var Animation   = require("libs/animation");
     // var Config 		= require("js/config");
 var collect = function(s, e, url){
@@ -7,10 +8,28 @@ var collect = function(s, e, url){
 };
 var FRAMES = {
     width: 134*2,
-    height: 172
+    height: 172,
+    BOUNDS:{
+    	left:  40,
+    	right: 40,
+    	top:  200,
+    	bottom:10,
+    }
 };
-var GLOBAL_SPEED = 0.4;
-
+var GLOBAL_SPEED = 0.4;//decimal (0,1]
+var GLOBAL_SIZE = {
+	W:1280,
+	H:860
+};
+var JUMP = {
+	HEIGHT: 100,//px
+	TWEEN_TIME: 0.3,//sec
+	EASING: Power2.EaseOut
+};
+var WALK = {
+	TWEEN_TIME: 0.1,//sec
+	SPEED: 21,//px
+};
 var MV = function(startFrame, endFrame, url, tint){
 	var move;
 	if (startFrame == endFrame){
@@ -37,12 +56,13 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 	var Character = function(settings){
 		PIXI.Container.call(this);
 		this.settings = settings;
-		this._state = null;
-		this.facingDirection = null;
+		this._state = "null";
+		this.facingDirection = (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right);
 		this.STATES = {};
 		this.initStateAnimations();
-		this.setState("idle");
-		this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
+		this.doAction("idle");
+		// this.setState();
+		// this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
 
 	};
 
@@ -87,41 +107,49 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 			},
 			"walk": {
 				animation: "walk",//ninja
+				// next : function(args){return "idle"},
 				directions: {//cannot walk and stay idle
 					left: DIRECTIONS.Left,
-					reft: DIRECTIONS.Right,
+					right: DIRECTIONS.Right,
 				}
 			},
 			"jump": {
 				animation: "jump_up",//ninja
-				next : function(args){return "fall"},
+				next : function(args){return "jump_down"},
 				directions: {
 					idle: DIRECTIONS.Idle,
 					left: DIRECTIONS.Left,
-					reft: DIRECTIONS.Right,
+					right: DIRECTIONS.Right,
 				}
 			},
-			"fall": {
+			"jump_down": {
 				animation: "jump_down",//ninja
 				next : function(args){
 					if (args && !!args.under){
 						args.under.hit();
 						return "splash";
 					}
-					return "land";
+					return "jump_land";
 				},
 				directions: {
 					idle: DIRECTIONS.Idle,
 					left: DIRECTIONS.Left,
-					reft: DIRECTIONS.Right,
+					right: DIRECTIONS.Right,
 				}
 			},
-			"land": {
+			"jump_land": {
 				animation: "jump_land",//ninja
+				next : function(args){
+					// if (args && !!args.under){
+					// 	args.under.hit();
+					// 	return "splash";
+					// }
+					return "idle";
+				},
 				directions: {
 					idle: DIRECTIONS.Idle,
 					left: DIRECTIONS.Left,
-					reft: DIRECTIONS.Right,
+					right: DIRECTIONS.Right,
 				}
 			},
 			"splash": {
@@ -193,14 +221,70 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 
 		};
 	};
+	Character.prototype.doAction = function(type, direction){
+		// "action should be declared as:";
+		// "walk:left";
+		var state = this.ACTIONS[type].animation;
+		if (!this.checkStateTransition(state)) {
+			return;
+		}
+		// console.log();
+		if (direction){
+			this.setDirection(this.ACTIONS[type].directions[direction]);
+		}
+		this.setState(state);
+		return;
+		switch(sc) {
+			case "walk_left":
+
+				this.setDirection(DIRECTIONS.Left);
+				// this.setState("walk");
+			break;
+			case "walk_right":
+				this.setDirection(DIRECTIONS.Right);
+				// this.setState("walk");
+			break;
+			case "jump_right":
+				this.setDirection(DIRECTIONS.Right);
+				this.setState("jump");
+			break;
+			case "jump":
+			case "jump_up":
+				// this.setDirection(DIRECTIONS.Right);
+				this.setState("jump_up");
+				TweenMax.to(this.position, JUMP.TWEEN_TIME, {
+					y:this.y-JUMP.HEIGHT,
+					ease:JUMP.EASING,
+					onComplete
+				});
+			break;
+			default:
+			return;
+		}
+	};
 
 	Character.prototype.getStateAnimation = function(){
 		return this.STATES[this._state];
 	};
 
 	Character.prototype.setDirection = function(newDirection){
+		this.directionInterval && window.clearInterval(this.directionInterval);
+		if (!newDirection){
+			return;
+		}
 		this.facingDirection = newDirection;
 		this.updateDirection();
+		if (newDirection == DIRECTIONS.Left){
+			this.directionInterval = setInterval(function() {
+				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.max(this.x-WALK.SPEED, FRAMES.BOUNDS.left)});
+			}.bind(this), WALK.TWEEN_TIME*100);
+		} else if (newDirection == DIRECTIONS.Right){
+			this.directionInterval = setInterval(function() {
+				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.min(this.x+WALK.SPEED, GLOBAL_SIZE.W-FRAMES.BOUNDS.right)});
+			}.bind(this), WALK.TWEEN_TIME*100);
+		}
+		return;
+
 	};
 
 	Character.prototype.updateDirection = function(){
@@ -220,7 +304,7 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 
 	Character.prototype.setState = function(newState){
 		if (this.checkStateTransition(newState)){
-			if (this._state != newState && this._state != null){
+			if (this._state != newState && this._state != "null"){
 				//hide stale state animation
 				this.getStateAnimation().visible = false;
 			}
@@ -228,6 +312,42 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 			this.updateDirection();
 			var m = this.getStateAnimation();
 			m.visible = true;
+			switch(this._state) {
+
+				case "jump":
+				case "jump_up":
+					var nextStateGetter = this.ACTIONS["jump"].next;
+					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
+						y: this.y - JUMP.HEIGHT,
+						ease: JUMP.EASING,
+						onComplete: !!nextStateGetter && function() {
+							this.setState(nextStateGetter(this));
+						}.bind(this),
+					});
+				break;
+				case "fall":
+				case "jump_down":
+					var nextStateGetter = this.ACTIONS["jump_down"].next;
+					TweenMax.to(this.position, JUMP.TWEEN_TIME/8, {
+						y: this.y + JUMP.HEIGHT/8,
+						ease: JUMP.EASING,
+						onComplete: !!nextStateGetter && function() {
+							this.setState(nextStateGetter(this));
+						}.bind(this),
+					});
+				break;
+				case "jump_land":
+				// debugger;
+					var nextStateGetter = this.ACTIONS["jump_land"].next;
+					TweenMax.to(this.position, JUMP.TWEEN_TIME*7 /8, {
+						y: this.y + JUMP.HEIGHT*7 /8,
+						ease: JUMP.LAND_EASING,
+						onComplete: !!nextStateGetter && function() {
+							this.setState(nextStateGetter(this));
+						}.bind(this),
+					});
+				break;
+			}
 			m.play && m.play();
 		} else {
 			var msg = "Inappropriate state transition" + this._state + "->" + newState;
@@ -236,6 +356,8 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 		}
 	};
 
+
+//DBG stuff
 	Character.prototype.logPositions = function(){
 		// console.warn(this.idle.getLocalBounds());
 		// console.warn(this.idle.getBounds());
@@ -243,25 +365,13 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 		// console.warn(this.getLocalBounds());
 		// console.warn(this.getBounds());
 		var bbox = this.getLocalBounds();
-		this.addChild(new PIXI.Graphics).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
+		this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
 	};
 	Character.prototype.testScenario = function(sc){
-		switch(sc) {
-			case "walk_left":
-				this.setDirection(DIRECTIONS.Left);
-				this.setState("walk");
-			break;
-			case "walk_right":
-				this.setDirection(DIRECTIONS.Right);
-				this.setState("walk");
-			break;
-			case "jump_right":
-				this.setDirection(DIRECTIONS.Right);
-				this.setState("jump");
-			break;
-			default:
-			return;
-		}
+		var tmp = sc.split(":");
+		var type = tmp[0];
+		var direction = tmp[1];
+		return this.doAction(type, direction);
 	};
 	return Character;
 });
