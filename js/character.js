@@ -6,6 +6,10 @@ define(function(require) {
 var collect = function(s, e, url){
 	return [].range(s,e).map(function(i){return url.replace("%s",""+i)})
 };
+var GAME_SIZE = {
+	W:1280,
+	H:860
+};
 var FRAMES = {
     width: 134*2,
     height: 172,
@@ -14,13 +18,13 @@ var FRAMES = {
     	right: 40,
     	top:  200,
     	bottom:10,
-    }
+    },
+};
+var STAGE_BOUNDS = {
+	left : FRAMES.BOUNDS.left,
+	right: GAME_SIZE.W - FRAMES.BOUNDS.right,
 };
 var GLOBAL_SPEED = 0.4;//decimal (0,1]
-var GLOBAL_SIZE = {
-	W:1280,
-	H:860
-};
 var JUMP = {
 	HEIGHT: 100,//px
 	TWEEN_TIME: 0.3,//sec
@@ -276,11 +280,11 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 		this.updateDirection();
 		if (newDirection == DIRECTIONS.Left){
 			this.directionInterval = setInterval(function() {
-				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.max(this.x-WALK.SPEED, FRAMES.BOUNDS.left)});
+				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.max(this.x-WALK.SPEED, STAGE_BOUNDS.left)});
 			}.bind(this), WALK.TWEEN_TIME*100);
 		} else if (newDirection == DIRECTIONS.Right){
 			this.directionInterval = setInterval(function() {
-				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.min(this.x+WALK.SPEED, GLOBAL_SIZE.W-FRAMES.BOUNDS.right)});
+				TweenMax.to(this.position, WALK.TWEEN_TIME, {x:Math.min(this.x+WALK.SPEED, STAGE_BOUNDS.right)});
 			}.bind(this), WALK.TWEEN_TIME*100);
 		}
 		return;
