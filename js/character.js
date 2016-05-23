@@ -14,10 +14,10 @@ var FRAMES = {
     width: 134*2,
     height: 172,
     BOUNDS:{
-    	left:  40,
-    	right: 40,
-    	top:  200,
-    	bottom:10,
+    	left:  32,
+    	right: 32,
+    	top:  -5,
+    	bottom:77,
     },
 };
 var STAGE_BOUNDS = {
@@ -369,7 +369,16 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 		// console.warn(this.getLocalBounds());
 		// console.warn(this.getBounds());
 		var bbox = this.getLocalBounds();
-		this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(bbox.x, bbox.y, bbox.width, bbox.height).endFill();
+		var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
+		var hitZone = this.addChild(new PIXI.Graphics())
+			.clear()
+			.beginFill(this.settings.skin.tint, 0.7)
+			.moveTo(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom)
+			.lineTo(+FRAMES.BOUNDS.right, +FRAMES.BOUNDS.bottom)
+			.lineTo(+FRAMES.BOUNDS.right, -FRAMES.BOUNDS.top)
+			.lineTo(-FRAMES.BOUNDS.left, -FRAMES.BOUNDS.top)
+			.lineTo(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom)
+			// .endFill();
 	};
 	Character.prototype.testScenario = function(sc){
 		var tmp = sc.split(":");
