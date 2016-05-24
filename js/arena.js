@@ -17,6 +17,7 @@ define(function(require){
     var Stage           = require("libs/stage");
     var Dekor           = require("js/dekor");
     var Character       = require("js/character");
+    var Ground          = require("js/ground");
 
     var Arena = {};
     window.Arena = Arena;
@@ -29,6 +30,12 @@ define(function(require){
     Arena.prototype = Object.create(Stage.prototype);
     Arena.prototype.initArena = function(){
         var arena = this.addChild(new PIXI.Container());
+        this.arena = arena;
+        //TODO: Ground is part of the arena!
+        //TODO: make ground solid
+        this.staticObjects = GROUND_DATA.map(function(data){
+            return arena.addChild(new Ground(data));
+        });
 
         //TODO: place Characters automaticaly on the top of some ground.
         this.ninji = Object.keys(NINJA_START_POINTS).map(function(skin, index){
@@ -40,7 +47,6 @@ define(function(require){
             ninja.logPositions();
             return ninja;
         });
-
     };
 
     OnLoad(function(){
@@ -53,5 +59,8 @@ define(function(require){
         arena.ninji[3].testScenario("walk:left");
         arena.ninji[4].testScenario("walk:right");
         arena.ninji[5].testScenario("walk:right");
+        arena.staticObjects.forEach(function(ground){
+            ground.logPositions();
+        });
     });
 });

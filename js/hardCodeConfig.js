@@ -91,6 +91,17 @@ define(function(require) {
         "5":new PIXI.Point(350, 735),
         // "6":new PIXI.Point(1150, 735),
     };
+    window.GROUND_DATA = [ // sorted by x
+        //small size
+        {frame: resources.GROUND_3,  position: {x:  0, y:519}}, // most left
+        {frame: resources.GROUND_3,  position: {x:163, y:225}},
+        {frame: resources.GROUND_3,  position: {x:778, y:616}},
+        //medium size
+        {frame: resources.GROUND_8,  position: {x:376, y:330}}, // in the middle
+        {frame: resources.GROUND_8,  position: {x:968, y:412}}, // to the right
+        //main ground
+        {frame: resources.GROUND_30, position: {x:  0, y:822}}, // bottom
+    ];
 
 	return;
 });
