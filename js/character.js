@@ -16,9 +16,6 @@ var KeyHandlersInit = false; //single handlers only
 		this.initStateAnimations();
 		this.doAction("idle");
 		this.doJump = false;
-		// this.setState();
-		// this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
-
 	};
 
 	Character.prototype = Object.create(PIXI.Container.prototype);
@@ -261,34 +258,6 @@ var KeyHandlersInit = false; //single handlers only
 			this.setDirection(direction);
 		}
 		this.setState(state);
-		return;
-		switch(sc) {
-			case "walk_left":
-
-				this.setDirection(DIRECTIONS.Left);
-				// this.setState("walk");
-			break;
-			case "walk_right":
-				this.setDirection(DIRECTIONS.Right);
-				// this.setState("walk");
-			break;
-			case "jump_right":
-				this.setDirection(DIRECTIONS.Right);
-				this.setState("jump");
-			break;
-			case "jump":
-			// case "jump_up":
-				// this.setDirection(DIRECTIONS.Right);
-				this.setState("jump");
-				TweenMax.to(this.position, JUMP.TWEEN_TIME, {
-					y:this.y-JUMP.HEIGHT,
-					ease:JUMP.EASING,
-					onComplete
-				});
-			break;
-			default:
-			return;
-		}
 	};
 
 	Character.prototype.getStateAnimation = function(){
@@ -383,24 +352,47 @@ var KeyHandlersInit = false; //single handlers only
 	};
 
 
+	Character.prototype.getBodyEdgePoints = function(){
+		this.areaPoints = {
+			top: {
+				left: new PIXI.Point(-FRAMES.BOUNDS.left, -FRAMES.BOUNDS.top),
+				right: new PIXI.Point(+FRAMES.BOUNDS.right, -FRAMES.BOUNDS.top),
+			},
+			bottom:{
+				left: new PIXI.Point(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom),
+				right: new PIXI.Point(+FRAMES.BOUNDS.right, +FRAMES.BOUNDS.bottom),
+			}
+		};
+        // this.updateTransform();
+
+		var bbox = this.getBounds(PIXI.Matrix.IDENTITY.translate(this.x, this.y));
+
+		this.edgePoints = { // global
+            left_x:    this.x - FRAMES.BOUNDS.left,
+            right_x:   this.x + FRAMES.BOUNDS.right,
+            top_y:     this.y - FRAMES.BOUNDS.top,
+            bottom_y:  this.y + FRAMES.BOUNDS.bottom,
+            width : bbox.width,
+			height: bbox.height,
+		};
+
+	};
+
+
 //DBG stuff
 	Character.prototype.logPositions = function(){
-		// console.warn(this.idle.getLocalBounds());
-		// console.warn(this.idle.getBounds());
-
-		// console.warn(this.getLocalBounds());
-		// console.warn(this.getBounds());
-		var bbox = this.getLocalBounds();
+		this.getBodyEdgePoints();
 		var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.1).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
 		var hitZone = this.addChild(new PIXI.Graphics())
 			.clear()
 			.beginFill(this.settings.skin.tint, 0.7)
-			.moveTo(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom)
-			.lineTo(+FRAMES.BOUNDS.right, +FRAMES.BOUNDS.bottom)
-			.lineTo(+FRAMES.BOUNDS.right, -FRAMES.BOUNDS.top)
-			.lineTo(-FRAMES.BOUNDS.left, -FRAMES.BOUNDS.top)
-			.lineTo(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom)
-			// .endFill();
+			.moveTo(this.edgePoints.left_x, this.edgePoints.bottom_y)
+			.lineTo(this.edgePoints.right_x, this.edgePoints.bottom_y)
+			.lineTo(this.edgePoints.right_x, this.edgePoints.top_y)
+			.lineTo(this.edgePoints.left_x, this.edgePoints.top_y)
+			.lineTo(this.edgePoints.left_x, this.edgePoints.bottom_y)
+			.endFill();
+        hitZone.position.set(-this.x,-this.y);
 	};
 	Character.prototype.testScenario = function(sc){
 		var tmp = sc.split(":");

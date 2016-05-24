@@ -31,7 +31,7 @@ define(function(require){
     Arena.prototype.initArena = function(){
         var arena = this.addChild(new PIXI.Container());
         this.arena = arena;
-        //TODO: Ground is part of the arena!
+        // this.getRenderMoment();
         //TODO: make ground solid
         this.staticObjects = GROUND_DATA.map(function(data){
             return arena.addChild(new Ground(data));

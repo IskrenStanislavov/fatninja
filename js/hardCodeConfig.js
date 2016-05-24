@@ -93,9 +93,9 @@ define(function(require) {
     ];
     window.GROUND_DATA = [ // sorted by x
         //small size
-        {frame: resources.GROUND_3,  position: {x:  0, y:519}, tolerance:{left:2, right:6,top:2,bottom:1} }, // most left
-        {frame: resources.GROUND_3,  position: {x:163, y:225}, tolerance:{left:2, right:6,top:2,bottom:1} },
-        {frame: resources.GROUND_3,  position: {x:778, y:616}, tolerance:{left:2, right:6,top:2,bottom:1} },
+        {frame: resources.GROUND_3,  position: {x:  0, y:519}, tolerance:{left:3, right:6,top:2,bottom:1} }, // most left
+        {frame: resources.GROUND_3,  position: {x:163, y:225}, tolerance:{left:3, right:6,top:2,bottom:1} },
+        {frame: resources.GROUND_3,  position: {x:778, y:616}, tolerance:{left:3, right:6,top:2,bottom:1} },
         //medium size
         {frame: resources.GROUND_8,  position: {x:376, y:330}, tolerance:{left:6, right:4,top:2,bottom:2} }, // in the middle
         {frame: resources.GROUND_8,  position: {x:968, y:412}, tolerance:{left:6, right:4,top:2,bottom:2} }, // to the right
