@@ -82,15 +82,15 @@ define(function(require) {
         "GROUND_8"      : "images/ground08.png",
         "GROUND_30"     : "images/ground30.png",
     };
-    window.NINJA_START_POINTS = {
-        "0":new PIXI.Point(200, 140+9),
-        "1":new PIXI.Point(408, 245+9),
-        "2":new PIXI.Point( 40, 433+9),
-        "3":new PIXI.Point(810, 530+9),
-        "4":new PIXI.Point(1000,326+9),
-        "5":new PIXI.Point(350, 735+9),
-        // "6":new PIXI.Point(1150, 735+9),
-    };
+    window.NINJA_START_POINTS = [
+        new PIXI.Point(200, 149),
+        new PIXI.Point(408, 254),
+        new PIXI.Point( 40, 442),
+        new PIXI.Point(810, 539),
+        new PIXI.Point(1000,335),
+        new PIXI.Point(350, 744),
+        // new PIXI.Point(1150, 735+9),
+    ];
     window.GROUND_DATA = [ // sorted by x
         //small size
         {frame: resources.GROUND_3,  position: {x:  0, y:519}, tolerance:{left:2, right:6,top:2,bottom:1} }, // most left

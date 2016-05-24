@@ -38,12 +38,12 @@ define(function(require){
         });
 
         //TODO: place Characters automaticaly on the top of some ground.
-        this.ninji = Object.keys(NINJA_START_POINTS).map(function(skin, index){
-            skin = SKINS[index];
+        this.ninji = NINJA_START_POINTS.map(function(position, index){
+            var skin = SKINS[index];
             var ninja = arena.addChild(new Character({
                 skin:skin,
             }));
-            ninja.position.copy(NINJA_START_POINTS[index]);
+            ninja.position.copy(position);
             ninja.logPositions();
             return ninja;
         });
