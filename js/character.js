@@ -391,7 +391,7 @@ var KeyHandlersInit = false; //single handlers only
 		// console.warn(this.getLocalBounds());
 		// console.warn(this.getBounds());
 		var bbox = this.getLocalBounds();
-		var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.3).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
+		var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.1).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
 		var hitZone = this.addChild(new PIXI.Graphics())
 			.clear()
 			.beginFill(this.settings.skin.tint, 0.7)

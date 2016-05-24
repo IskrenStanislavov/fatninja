@@ -83,24 +83,24 @@ define(function(require) {
         "GROUND_30"     : "images/ground30.png",
     };
     window.NINJA_START_POINTS = {
-        "0":new PIXI.Point(200, 140),
-        "1":new PIXI.Point(408, 245),
-        "2":new PIXI.Point( 40, 433),
-        "3":new PIXI.Point(810, 530),
-        "4":new PIXI.Point(1000, 326),
-        "5":new PIXI.Point(350, 735),
-        // "6":new PIXI.Point(1150, 735),
+        "0":new PIXI.Point(200, 140+9),
+        "1":new PIXI.Point(408, 245+9),
+        "2":new PIXI.Point( 40, 433+9),
+        "3":new PIXI.Point(810, 530+9),
+        "4":new PIXI.Point(1000,326+9),
+        "5":new PIXI.Point(350, 735+9),
+        // "6":new PIXI.Point(1150, 735+9),
     };
     window.GROUND_DATA = [ // sorted by x
         //small size
-        {frame: resources.GROUND_3,  position: {x:  0, y:519}}, // most left
-        {frame: resources.GROUND_3,  position: {x:163, y:225}},
-        {frame: resources.GROUND_3,  position: {x:778, y:616}},
+        {frame: resources.GROUND_3,  position: {x:  0, y:519}, tolerance:{left:2, right:6,top:2,bottom:1} }, // most left
+        {frame: resources.GROUND_3,  position: {x:163, y:225}, tolerance:{left:2, right:6,top:2,bottom:1} },
+        {frame: resources.GROUND_3,  position: {x:778, y:616}, tolerance:{left:2, right:6,top:2,bottom:1} },
         //medium size
-        {frame: resources.GROUND_8,  position: {x:376, y:330}}, // in the middle
-        {frame: resources.GROUND_8,  position: {x:968, y:412}}, // to the right
+        {frame: resources.GROUND_8,  position: {x:376, y:330}, tolerance:{left:6, right:4,top:2,bottom:2} }, // in the middle
+        {frame: resources.GROUND_8,  position: {x:968, y:412}, tolerance:{left:6, right:4,top:2,bottom:2} }, // to the right
         //main ground
-        {frame: resources.GROUND_30, position: {x:  0, y:822}}, // bottom
+        {frame: resources.GROUND_30, position: {x:  0, y:822}, tolerance:{left:0, right:0,top:2,bottom:0} }, // bottom
     ];
 
 	return;
