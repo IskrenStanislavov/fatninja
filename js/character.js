@@ -2,6 +2,8 @@ define(function(require) {
 	var PIXI        = require("PIXI");
 	var GSAP        = require("GSAP");
 	var Animation   = require("libs/animation");
+	var KeyHandlers = require("./keyHandlers");
+
     // var Config 		= require("js/config");
 var collect = function(s, e, url){
 	return [].range(s,e).map(function(i){return url.replace("%s",""+i)})
@@ -57,6 +59,7 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 	Idle: 0,
 	Right:-1
 };
+var KeyHandlersInit = false; //single handlers only
 	var Character = function(settings){
 		PIXI.Container.call(this);
 		this.settings = settings;
@@ -225,6 +228,28 @@ DIRECTIONS = {//TODO: can hold the speeds as well
 
 		};
 	};
+
+	Character.prototype.listeners = function(){
+		//listeners
+		if (KeyHandlersInit){
+			return;
+		}
+		KeyHandlersInit = true;
+		this.keyHandlers = new KeyHandlers();
+		this.keyHandlers.action.add(this.handleKeys, this);
+
+	};
+
+	Character.prototype.handleKeys = function(eData){
+		// console.log(JSON.stringify(eData));
+		// console.log(JSON.stringify(eData.directions));
+		if (!!eData.Left == !!eData.Right){
+			this.setDirection(DIRECTIONS.Idle);
+		} else {
+			this.setDirection(DIRECTIONS[eData.Left || eData.Right]);
+		}
+	};
+
 	Character.prototype.doAction = function(type, direction){
 		// "action should be declared as:";
 		// "walk:left";

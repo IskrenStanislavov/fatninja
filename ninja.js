@@ -118,6 +118,7 @@ define(function(require){
             // window.characters[0].testScenario("jump");
 
             window.characters[0].testScenario("jump:idle");
+            window.characters[0].listeners();
             window.characters[1].testScenario("jump:right");
             window.characters[2].testScenario("jump:left");
             window.characters[3].testScenario("walk:left");
