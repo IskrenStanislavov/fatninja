@@ -8,7 +8,7 @@ define(function(require) {
 		this.config = {'moves':{
 			// keyCode | action
 			37: "Left",
-			38: "jump_up",
+			38: "jump",
 			39: "Right",
 			// 40: "down",
 		}, "history":{

@@ -68,6 +68,7 @@ var KeyHandlersInit = false; //single handlers only
 		this.STATES = {};
 		this.initStateAnimations();
 		this.doAction("idle");
+		this.doJump = false;
 		// this.setState();
 		// this.setDirection( (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right) );
 
@@ -87,12 +88,13 @@ var KeyHandlersInit = false; //single handlers only
 
 		//land
 		this.jump_land = this.STATES.jump_land = this.addChild(MV(1,4, "jump_land/land (%s).png", this.settings.skin.tint));
+		this.jump_land.loop = false;
 
 		//jump over
 		this.jump_over = this.STATES.jump_over = this.addChild(MV(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
 
 		//jump up
-		this.jump_up = this.STATES.jump_up = this.addChild(MV(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
+		this.jump = this.STATES.jump = this.addChild(MV(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
 
 		//stun
 		this.stun = this.STATES.stun = this.addChild(MV(1,18, "stun/stun (%s).png", this.settings.skin.tint));
@@ -108,12 +110,31 @@ var KeyHandlersInit = false; //single handlers only
 		this.ACTIONS = {
 			"idle": {
 				animation: "idle",//ninja
+				toDirection: function(args){
+					args.self.doAction(args.hasJump?"jump":"walk", DIRECTIONS[args.direction])
+				},
+				setIdle: function(args){
+					return;
+				},
 				directions:{
 					idle: DIRECTIONS.Idle
 				}
 			},
 			"walk": {
 				animation: "walk",//ninja
+				toDirection: function(args){
+					// console.log(args.hasJump);
+					if (args.hasJump){
+						args.self.doAction(args.hasJump?"jump":"walk", DIRECTIONS[args.direction])
+					} else {
+						args.self.setDirection(DIRECTIONS[args.direction]);
+					}
+
+				},
+				setIdle: function(args){
+					args.self.setDirection(DIRECTIONS.Idle);
+					args.self.setState("idle");
+				},
 				// next : function(args){return "idle"},
 				directions: {//cannot walk and stay idle
 					left: DIRECTIONS.Left,
@@ -121,7 +142,13 @@ var KeyHandlersInit = false; //single handlers only
 				}
 			},
 			"jump": {
-				animation: "jump_up",//ninja
+				animation: "jump",//ninja
+				toDirection: function(args){
+					args.self.setDirection(DIRECTIONS[args.direction]);
+				},
+				setIdle: function(args){
+					args.self.setDirection(DIRECTIONS.Idle);
+				},
 				next : function(args){return "jump_down"},
 				directions: {
 					idle: DIRECTIONS.Idle,
@@ -131,6 +158,12 @@ var KeyHandlersInit = false; //single handlers only
 			},
 			"jump_down": {
 				animation: "jump_down",//ninja
+				toDirection: function(args){
+					args.self.setDirection(DIRECTIONS[args.direction]);
+				},
+				setIdle: function(args){
+					args.self.setDirection(DIRECTIONS.Idle);
+				},
 				next : function(args){
 					if (args && !!args.under){
 						args.under.hit();
@@ -146,11 +179,20 @@ var KeyHandlersInit = false; //single handlers only
 			},
 			"jump_land": {
 				animation: "jump_land",//ninja
+				toDirection: function(args){
+					args.self.setDirection(DIRECTIONS[args.direction]);
+				},
+				setIdle: function(args){
+					args.self.setDirection(DIRECTIONS.Idle);
+				},
 				next : function(args){
 					// if (args && !!args.under){
 					// 	args.under.hit();
 					// 	return "splash";
 					// }
+					if (args.self.doJump){
+						return "jump";
+					}
 					return "idle";
 				},
 				directions: {
@@ -209,19 +251,19 @@ var KeyHandlersInit = false; //single handlers only
 		this.FSM = {
 			null:["idle"],
 			"die":["null"],
-			"idle": ["jump_up", "walk", "stun", "die"],
+			"idle": ["jump", "walk", "stun", "die"],
 			"jump_down": ["jump_over", "jump_land"],
-			"jump_land": ["idle", "walk"],
+			"jump_land": ["idle", "walk", "jump"],
 			"jump_over": ["idle", "walk"],
-			"jump_up": ["jump_down", ],
-			"stun": ["stun", "idle", "walk", "jump_up"],
+			"jump": ["jump_down", ],
+			"stun": ["stun", "idle", "walk", "jump"],
 			"walk": [
 				"die",
 				"idle",
 				"jump_down",
 				"jump_land",
 				"jump_over",
-				"jump_up",
+				"jump",
 				"stun",
 				"walk",
 			],
@@ -241,12 +283,19 @@ var KeyHandlersInit = false; //single handlers only
 	};
 
 	Character.prototype.handleKeys = function(eData){
+		this.doJump = eData.jump;
 		// console.log(JSON.stringify(eData));
 		// console.log(JSON.stringify(eData.directions));
+
+		this.moveState = (eData.Left || eData.Right);
 		if (!!eData.Left == !!eData.Right){
-			this.setDirection(DIRECTIONS.Idle);
+			if (eData.jump){
+				this.ACTIONS[this._state].toDirection({self:this, direction:DIRECTIONS.Idle, hasJump: !!eData.jump});
+			} else {
+				this.ACTIONS[this._state].setIdle({self:this});
+			}
 		} else {
-			this.setDirection(DIRECTIONS[eData.Left || eData.Right]);
+			this.ACTIONS[this._state].toDirection({self:this, direction:(eData.Left || eData.Right), hasJump: !!eData.jump});
 		}
 	};
 
@@ -259,7 +308,10 @@ var KeyHandlersInit = false; //single handlers only
 		}
 		// console.log();
 		if (direction){
-			this.setDirection(this.ACTIONS[type].directions[direction]);
+			if (typeof direction == "string"){
+				direction = this.ACTIONS[type].directions[direction];
+			}
+			this.setDirection(direction);
 		}
 		this.setState(state);
 		return;
@@ -278,9 +330,9 @@ var KeyHandlersInit = false; //single handlers only
 				this.setState("jump");
 			break;
 			case "jump":
-			case "jump_up":
+			// case "jump_up":
 				// this.setDirection(DIRECTIONS.Right);
-				this.setState("jump_up");
+				this.setState("jump");
 				TweenMax.to(this.position, JUMP.TWEEN_TIME, {
 					y:this.y-JUMP.HEIGHT,
 					ease:JUMP.EASING,
@@ -297,6 +349,11 @@ var KeyHandlersInit = false; //single handlers only
 	};
 
 	Character.prototype.setDirection = function(newDirection){
+		if (typeof newDirection == "string"){
+			console.warn(newDirection);
+			debugger;
+			throw "should be -1,0,1"
+		}
 		this.directionInterval && window.clearInterval(this.directionInterval);
 		if (!newDirection){
 			return;
@@ -342,39 +399,32 @@ var KeyHandlersInit = false; //single handlers only
 			var m = this.getStateAnimation();
 			m.visible = true;
 			switch(this._state) {
-
 				case "jump":
-				case "jump_up":
 					var nextStateGetter = this.ACTIONS["jump"].next;
 					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
 						y: this.y - JUMP.HEIGHT,
 						ease: JUMP.EASING,
 						onComplete: !!nextStateGetter && function() {
-							this.setState(nextStateGetter(this));
+							this.setState(nextStateGetter({self:this}));
 						}.bind(this),
 					});
 				break;
 				case "fall":
 				case "jump_down":
 					var nextStateGetter = this.ACTIONS["jump_down"].next;
-					TweenMax.to(this.position, JUMP.TWEEN_TIME/8, {
-						y: this.y + JUMP.HEIGHT/8,
+					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
+						y: this.y + JUMP.HEIGHT,
 						ease: JUMP.EASING,
 						onComplete: !!nextStateGetter && function() {
-							this.setState(nextStateGetter(this));
+							this.setState(nextStateGetter({self:this}));
 						}.bind(this),
 					});
 				break;
 				case "jump_land":
-				// debugger;
-					var nextStateGetter = this.ACTIONS["jump_land"].next;
-					TweenMax.to(this.position, JUMP.TWEEN_TIME*7 /8, {
-						y: this.y + JUMP.HEIGHT*7 /8,
-						ease: JUMP.LAND_EASING,
-						onComplete: !!nextStateGetter && function() {
-							this.setState(nextStateGetter(this));
-						}.bind(this),
-					});
+					this.jump_land.onComplete = function(){
+						var nextStateGetter = this.ACTIONS["jump_land"].next;
+						this.setState(nextStateGetter({self:this}));
+					}.bind(this);
 				break;
 			}
 			m.play && m.play();
