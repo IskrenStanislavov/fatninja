@@ -5,17 +5,17 @@ define(function(require){
         // PIXI.loaders.Loader.apply(this);
         // this.onComplete = ;
         // this.load(data.onComplete);
-        console.log("in loader");
+        // console.log("in loader");
         var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
-        loader.on("progress", function(){
-        	console.log(arguments);
-        });
+        // loader.on("progress", function(){
+        // 	console.log(arguments);
+        // });
         loader.on("error", function(){
         	console.error(arguments);
         });
-        loader.on("load", function(){
-        	console.info("loaded:",arguments);
-        });
+        // loader.on("load", function(){
+        // 	console.info("loaded:",arguments);
+        // });
 
         data.resources.forEach(function(name) {
         	loader.add(name, name);
