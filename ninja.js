@@ -5,36 +5,13 @@ require.config({
         GSAP:"../node_modules/gsap/src/minified/TweenMax.min"
     }
 });
-var SKINS = [
-    {
-        color:"normal",
-        tint: 0xFFFFFF
-    },
-    {
-        color:"red",
-        tint: 0xFF0000
-    },
-    {
-        color:"green",
-        tint: 0x00FF00
-    },
-    {
-        color:"blue",
-        tint: 0x2222FF
-    },
-    {
-        color:"pink",
-        tint: 0x7722FF
-    },
-    {
-        color:"black",
-        tint: 0x334433
-    }
-    ];
+
 define(function(require){
     require("libs/functions");
+    require("js/hardCodeConfig");
     require("PIXI");
-    // require("libs/extendPIXI");
+    require("GSAP");
+    require("js/extendPIXI");
 
     var CustomLoader    = require("libs/loader");
     var Stage           = require("libs/stage");
@@ -52,27 +29,8 @@ define(function(require){
         // d = 10;
     }
 
-    var resources = {
-        "MAIN_DECOR"    : "images/decor.png",
-        "CLOUD_RIGHT"   : "images/cloud01.png",
-        "CLOUD_SMALL"   : "images/cloud02.png",
-        "CLOUD_LEFT"    : "images/cloud03.png",
-        "NINJA_SPRITE"  : "images/ninja.json",
-        "GROUND_3"      : "images/ground03.png",
-        "GROUND_8"      : "images/ground08.png",
-        "GROUND_30"     : "images/ground30.png",
-    };
-
     new CustomLoader({resources:Object.values(resources), onComplete: function(){
-            var stage = new Stage({
-                sizes: {
-                    width: 1280,
-                    height: 860
-                },
-                contextMenu: false,
-                stageColor: 0xBEDAFF,
-                canvasId: "game"
-            });
+            var stage = new Stage(STAGE_INIT_DATA);
             Game.bg = stage.addChild(PIXI.Sprite.fromFrame(resources.MAIN_DECOR));
             Game.bg.visible = false;
             //TODO: make cloud animation
@@ -97,21 +55,12 @@ define(function(require){
             ];
             //char1
             //TODO: place Characters automaticaly on the top of some ground.
-            var a = {
-                "0":new PIXI.Point(200, 140),
-                "1":new PIXI.Point(408, 245),
-                "2":new PIXI.Point( 40, 433),
-                "3":new PIXI.Point(810, 530),
-                "4":new PIXI.Point(1000, 326),
-                "5":new PIXI.Point(350, 735),
-                // "6":new PIXI.Point(1150, 735),
-            };
-            window.characters = Object.keys(a).map(function(skin, index){
+            window.characters = Object.keys(NINJA_START_POINTS).map(function(skin, index){
                 skin = SKINS[index];
                 var ninja = stage.addChild(new Character({
                     skin:skin,
                 }));
-                ninja.position.copy(a[index]);
+                ninja.position.copy(NINJA_START_POINTS[index]);
                 ninja.logPositions();
                 return ninja;
             });

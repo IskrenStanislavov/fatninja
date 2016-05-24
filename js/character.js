@@ -4,61 +4,8 @@ define(function(require) {
 	var Animation   = require("libs/animation");
 	var KeyHandlers = require("./keyHandlers");
 
-    // var Config 		= require("js/config");
-var collect = function(s, e, url){
-	return [].range(s,e).map(function(i){return url.replace("%s",""+i)})
-};
-var GAME_SIZE = {
-	W:1280,
-	H:860
-};
-var FRAMES = {
-    width: 134*2,
-    height: 172,
-    BOUNDS:{
-    	left:  32,
-    	right: 32,
-    	top:  -5,
-    	bottom:77,
-    },
-};
-var STAGE_BOUNDS = {
-	left : FRAMES.BOUNDS.left,
-	right: GAME_SIZE.W - FRAMES.BOUNDS.right,
-};
-var GLOBAL_SPEED = 0.4;//decimal (0,1]
-var JUMP = {
-	HEIGHT: 100,//px
-	TWEEN_TIME: 0.3,//sec
-	EASING: Power2.EaseOut
-};
-var WALK = {
-	TWEEN_TIME: 0.1,//sec
-	SPEED: 21,//px
-};
-var MV = function(startFrame, endFrame, url, tint){
-	var move;
-	if (startFrame == endFrame){
-		move = PIXI.Sprite.fromFrame(collect(startFrame, endFrame, url)[0]);
-	} else {
-		move = PIXI.extras.MovieClip.fromFrames(collect(startFrame, endFrame, url));
-	}
-	move.pivot.set(FRAMES.width*0.5, FRAMES.height*0.5);
-	move.visible = false;
-	if (typeof tint !== "undefined"){
-		move.tint = tint;
-	}
-	if (!!move.play) {
-		move.animationSpeed = GLOBAL_SPEED;
-		// move.play();
-	}
-	return move;
-};
-DIRECTIONS = {//TODO: can hold the speeds as well
-	Left: 1,
-	Idle: 0,
-	Right:-1
-};
+    require("./hardCodeConfig");
+
 var KeyHandlersInit = false; //single handlers only
 	var Character = function(settings){
 		PIXI.Container.call(this);
@@ -78,29 +25,29 @@ var KeyHandlersInit = false; //single handlers only
 
 	Character.prototype.initStateAnimations = function(){
 		//die
-		this.die = this.STATES.die = this.addChild(MV(1,27, "die/die (%s).png", this.settings.skin.tint));
+		this.die = this.STATES.die = this.addChild(PIXI.MakeMovie(1,27, "die/die (%s).png", this.settings.skin.tint));
 
 		//idle
-		this.idle = this.STATES.idle = this.addChild(MV(1,1, "idle/idle (%s).png", this.settings.skin.tint));
+		this.idle = this.STATES.idle = this.addChild(PIXI.MakeMovie(1,1, "idle/idle (%s).png", this.settings.skin.tint));
 
 		//jump down
-		this.jump_down = this.STATES.jump_down = this.addChild(MV(1,1, "jump_down/ninja_jump_down (%s).png", this.settings.skin.tint));
+		this.jump_down = this.STATES.jump_down = this.addChild(PIXI.MakeMovie(1,1, "jump_down/ninja_jump_down (%s).png", this.settings.skin.tint));
 
 		//land
-		this.jump_land = this.STATES.jump_land = this.addChild(MV(1,4, "jump_land/land (%s).png", this.settings.skin.tint));
+		this.jump_land = this.STATES.jump_land = this.addChild(PIXI.MakeMovie(1,4, "jump_land/land (%s).png", this.settings.skin.tint));
 		this.jump_land.loop = false;
 
 		//jump over
-		this.jump_over = this.STATES.jump_over = this.addChild(MV(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
+		this.jump_over = this.STATES.jump_over = this.addChild(PIXI.MakeMovie(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
 
 		//jump up
-		this.jump = this.STATES.jump = this.addChild(MV(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
+		this.jump = this.STATES.jump = this.addChild(PIXI.MakeMovie(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
 
 		//stun
-		this.stun = this.STATES.stun = this.addChild(MV(1,18, "stun/stun (%s).png", this.settings.skin.tint));
+		this.stun = this.STATES.stun = this.addChild(PIXI.MakeMovie(1,18, "stun/stun (%s).png", this.settings.skin.tint));
 
 		//walk
-		this.walk = this.STATES.walk = this.addChild(MV(1,6, "walk/walk (%s).png", this.settings.skin.tint));
+		this.walk = this.STATES.walk = this.addChild(PIXI.MakeMovie(1,6, "walk/walk (%s).png", this.settings.skin.tint));
 
 
 
