@@ -130,12 +130,11 @@ var KeyHandlersInit = false; //single handlers only
 					args.self.setDirection(DIRECTIONS.Idle);
 				},
 				next : function(args){
-					// if (args && !!args.under){
-					// 	args.under.hit();
-					// 	return "splash";
-					// }
 					if (args.self.doJump){
 						return "jump";
+					}
+					if (!!args.self.directionInterval){
+						return "walk";
 					}
 					return "idle";
 				},
@@ -271,6 +270,7 @@ var KeyHandlersInit = false; //single handlers only
 			throw "should be -1,0,1"
 		}
 		this.directionInterval && window.clearInterval(this.directionInterval);
+		this.directionInterval = 0; //reset the id
 		if (!newDirection){
 			return;
 		}
