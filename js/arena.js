@@ -23,11 +23,35 @@ define(function(require){
     window.Arena = Arena;
 
     var Arena = function(){
-        Stage.call(this, STAGE_INIT_DATA);
+        Stage.call(this, STAGE_INIT_DATA, this.onRender.bind(this));
         this.addChild(new Dekor());
         this.initArena();
+        this.initialized=true;
     };
     Arena.prototype = Object.create(Stage.prototype);
+    Arena.prototype.onRender = function(){
+        var arena = this;
+        if (!!this.initialized){
+
+            // # DBG
+            if(!this.renderedOnce){
+                this.renderedOnce|=true;
+                console.warn("onRender2");
+                arena.ninji[0].testScenario("jump:idle");
+                arena.ninji[0].listeners();
+                arena.ninji[1].testScenario("jump:right");
+                arena.ninji[2].testScenario("jump:left");
+                arena.ninji[3].testScenario("walk:left");
+                arena.ninji[4].testScenario("walk:right");
+                arena.ninji[5].testScenario("walk:right");
+                arena.staticObjects.forEach(function(ground){
+                    ground.logPositions();
+                });
+                
+            }
+            this.applyChecks();
+        }
+    };
     Arena.prototype.initArena = function(){
         var arena = this.addChild(new PIXI.Container());
         this.arena = arena;
@@ -48,19 +72,10 @@ define(function(require){
             return ninja;
         });
     };
+    Arena.prototype.applyChecks = function(){
+    };
 
     OnLoad(function(){
         var arena = new Arena();
-        // window.ninji[0].testScenario("jump");
-        arena.ninji[0].testScenario("jump:idle");
-        arena.ninji[0].listeners();
-        arena.ninji[1].testScenario("jump:right");
-        arena.ninji[2].testScenario("jump:left");
-        arena.ninji[3].testScenario("walk:left");
-        arena.ninji[4].testScenario("walk:right");
-        arena.ninji[5].testScenario("walk:right");
-        arena.staticObjects.forEach(function(ground){
-            ground.logPositions();
-        });
     });
 });
