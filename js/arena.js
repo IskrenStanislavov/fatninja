@@ -18,9 +18,9 @@ define(function(require){
     var Dekor           = require("js/dekor");
     var Character       = require("js/character");
     var Ground          = require("js/ground");
+    var Maths          = require("js/maths");
 
     var Arena = {};
-    window.Arena = Arena;
 
     var Arena = function(){
         Stage.call(this, STAGE_INIT_DATA);
@@ -51,6 +51,8 @@ define(function(require){
 
     OnLoad(function(){
         var arena = new Arena();
+        window.arena = arena;
+
         // window.ninji[0].testScenario("jump");
         arena.ninji[0].testScenario("jump:idle");
         arena.ninji[0].listeners();
