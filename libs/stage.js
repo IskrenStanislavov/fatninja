@@ -2,7 +2,7 @@ define(function(require) {
     var PIXI        = require("PIXI");
     require('../node_modules/zepto/zepto.min');
 
-    var Stage = function( settings ){
+    var Stage = function( settings, onUpdateFunction ){
         this.renderer = PIXI.autoDetectRenderer(settings.sizes.width, settings.sizes.height, {
             "view":document.getElementById((settings && settings.canvasId) || "game"),
             "clearBeforeRender":false,
@@ -32,6 +32,14 @@ define(function(require) {
         }
 
         this.autoFitListeners();
+        if (onUpdateFunction){
+            this.update = function(){
+                this.resize();
+                onUpdateFunction();
+                this.renderer.render(this);
+                requestAnimationFrame(this.update.bind(this));
+            }.bind(this);
+        }
         this.update();
         this.disableContextMenu();
     };

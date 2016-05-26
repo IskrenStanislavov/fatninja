@@ -328,11 +328,15 @@ var KeyHandlersInit = false; //single handlers only
 				case "fall":
 				case "jump_down":
 					var nextStateGetter = this.ACTIONS["jump_down"].next;
+					TweenMax.killTweensOf(this.position, {y:true});
 					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
-						y: this.y + JUMP.HEIGHT,
+						y: this.y + Math.min(JUMP.HEIGHT, this.toTheGround),
 						ease: JUMP.EASING,
 						onComplete: !!nextStateGetter && function() {
-							this.setState(nextStateGetter({self:this}));
+							var newState = nextStateGetter({self:this}); 
+							if (newState!=this._state){
+								this.setState(newState);
+							}
 						}.bind(this),
 					});
 				break;
@@ -348,6 +352,19 @@ var KeyHandlersInit = false; //single handlers only
 			var msg = "Inappropriate state transition" + this._state + "->" + newState;
 			console.log(msg);
 			throw msg;
+		}
+	};
+
+
+	Character.prototype.updateJumpHeight = function(platform, toTheGround){
+		this.fallsOn = platform;
+		this.toTheGround = toTheGround;
+	};
+
+
+	Character.prototype.fallOn = function(){
+		if (this._state == "walk"){
+			this.setState("jump_down");
 		}
 	};
 
@@ -375,7 +392,7 @@ var KeyHandlersInit = false; //single handlers only
             width : bbox.width,
 			height: bbox.height,
 		};
-
+		return this.edgePoints;
 	};
 
 

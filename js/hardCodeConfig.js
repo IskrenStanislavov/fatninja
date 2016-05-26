@@ -31,7 +31,8 @@ define(function(require) {
     };
     window.GLOBAL_SPEED = 0.4;//decimal (0,1]
     window.JUMP = {
-        HEIGHT: 100,//px
+        HEIGHT: 150,//px
+        FALL: 20, //px
         TWEEN_TIME: 0.3,//sec
         EASING: Power2.EaseOut
     };

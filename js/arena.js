@@ -23,9 +23,29 @@ define(function(require){
     var Arena = {};
 
     var Arena = function(){
-        Stage.call(this, STAGE_INIT_DATA);
+        var arena = this;
+        Stage.call(this, STAGE_INIT_DATA, function(){//on render
+            if (!!this.initialized){
+                if(!this.renderedOnce){
+                    this.renderedOnce|=true;
+                    arena.ninji[0].testScenario("jump:idle");
+                    arena.ninji[0].listeners();
+                    arena.ninji[1].testScenario("jump:right");
+                    arena.ninji[2].testScenario("jump:left");
+                    arena.ninji[3].testScenario("walk:left");
+                    arena.ninji[4].testScenario("walk:right");
+                    arena.ninji[5].testScenario("walk:right");
+                    arena.staticObjects.forEach(function(ground){
+                        ground.logPositions();
+                    });
+                    
+                }
+                this.applyChecks();
+            }
+        }.bind(this));
         this.addChild(new Dekor());
         this.initArena();
+        this.initialized=true;
     };
     Arena.prototype = Object.create(Stage.prototype);
     Arena.prototype.initArena = function(){
@@ -33,9 +53,12 @@ define(function(require){
         this.arena = arena;
         // this.getRenderMoment();
         //TODO: make ground solid
+        this.staticEdgePoints = [];
         this.staticObjects = GROUND_DATA.map(function(data){
-            return arena.addChild(new Ground(data));
-        });
+            var ground = this.addChild(new Ground(data));
+            this.staticEdgePoints.push(ground.getBodyEdgePoints());
+            return ground;
+        }.bind(this));
 
         //TODO: place Characters automaticaly on the top of some ground.
         this.ninji = NINJA_START_POINTS.map(function(position, index){
@@ -47,22 +70,23 @@ define(function(require){
             ninja.logPositions();
             return ninja;
         });
+        this.me = this.ninji[0];
+    };
+    Arena.prototype.applyChecks = function(){
+
+        if (this.me._state == "jump_down" || this.me._state == "walk" || this.me._state == "jump"){
+            var platform = Maths.closestToLand(this.me.getBodyEdgePoints(),this.staticEdgePoints);
+            var toTheGround = platform.top_y - this.me.edgePoints.bottom_y;
+            if (this.me._state == "jump" || this.me._state == "jump_down"){
+                this.me.updateJumpHeight(toTheGround);
+            }
+            if (toTheGround > 2){
+                this.me.fallOn(platform);
+            }
+       }
     };
 
     OnLoad(function(){
-        var arena = new Arena();
-        window.arena = arena;
-
-        // window.ninji[0].testScenario("jump");
-        arena.ninji[0].testScenario("jump:idle");
-        arena.ninji[0].listeners();
-        arena.ninji[1].testScenario("jump:right");
-        arena.ninji[2].testScenario("jump:left");
-        arena.ninji[3].testScenario("walk:left");
-        arena.ninji[4].testScenario("walk:right");
-        arena.ninji[5].testScenario("walk:right");
-        arena.staticObjects.forEach(function(ground){
-            ground.logPositions();
-        });
+        window.arena = new Arena();
     });
 });

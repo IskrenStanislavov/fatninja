@@ -19,7 +19,7 @@ define(function(require) {
             width : bbox.width,
 			height: bbox.height,
 		};
-        console.log(JSON.stringify(this.edgePoints));
+		return this.edgePoints;
 	};
 
 
