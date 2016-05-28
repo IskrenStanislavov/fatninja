@@ -73,17 +73,12 @@ define(function(require){
         this.me = this.ninji[0];
     };
     Arena.prototype.applyChecks = function(){
-
-        if (this.me._state == "jump_down" || this.me._state == "walk" || this.me._state == "jump"){
-            var platform = Maths.closestToLand(this.me.getBodyEdgePoints(),this.staticEdgePoints);
-            var toTheGround = platform.top_y - this.me.edgePoints.bottom_y;
-            if (this.me._state == "jump" || this.me._state == "jump_down"){
-                this.me.updateJumpHeight(toTheGround);
-            }
-            if (toTheGround > 2){
-                this.me.fallOn(platform);
-            }
-       }
+        this.ninji.forEach(function(ninja){
+            if ( ninja._state.indexOf("jump") != -1 || ninja._state == "walk" ){
+                var platformData = Maths.closestToLand(ninja.getBodyEdgePoints(),this.staticEdgePoints);
+                ninja.abovePlatform(platformData);
+           }
+        }.bind(this));
     };
 
     OnLoad(function(){

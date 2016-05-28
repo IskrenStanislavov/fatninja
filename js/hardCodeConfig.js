@@ -31,10 +31,15 @@ define(function(require) {
     };
     window.GLOBAL_SPEED = 0.4;//decimal (0,1]
     window.JUMP = {
-        HEIGHT: 150,//px
-        FALL: 20, //px
+        HEIGHT: 250,//px
         TWEEN_TIME: 0.3,//sec
-        EASING: Power2.EaseOut
+        EASING: Power2.EaseOut,
+    };
+    var FALL_DELTA = 20;
+    window.FALL = {
+        HEIGHT: FALL_DELTA,//px
+        TWEEN_TIME: JUMP.TWEEN_TIME * FALL_DELTA / JUMP.HEIGHT,//sec
+        EASING: Power0.EaseNone
     };
     window.WALK = {
         TWEEN_TIME: 0.1,//sec

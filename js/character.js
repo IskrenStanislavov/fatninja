@@ -330,8 +330,8 @@ var KeyHandlersInit = false; //single handlers only
 					var nextStateGetter = this.ACTIONS["jump_down"].next;
 					TweenMax.killTweensOf(this.position, {y:true});
 					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
-						y: this.y + Math.min(JUMP.HEIGHT, this.toTheGround),
-						ease: JUMP.EASING,
+						y: this.y + this.getHeight(),
+						ease: JUMP.FALL_EASING,
 						onComplete: !!nextStateGetter && function() {
 							var newState = nextStateGetter({self:this}); 
 							if (newState!=this._state){
@@ -356,41 +356,35 @@ var KeyHandlersInit = false; //single handlers only
 	};
 
 
-	Character.prototype.updateJumpHeight = function(platform, toTheGround){
-		this.fallsOn = platform;
-		this.toTheGround = toTheGround;
+	Character.prototype.getHeight = function(){
+		if (!this.platformData){
+			return 0;
+		}
+		return (this.platformData.top_y - this.edgePoints.bottom_y);
+	};
+
+
+	Character.prototype.abovePlatform = function(platformData){
+		this.platformData = platformData;
+		if (this._state == "walk" && this.getHeight() > 2){
+			this.setState("jump_down");
+		}
+
 	};
 
 
 	Character.prototype.fallOn = function(){
-		if (this._state == "walk"){
-			this.setState("jump_down");
-		}
 	};
 
 
 	Character.prototype.getBodyEdgePoints = function(){
-		this.areaPoints = {
-			top: {
-				left: new PIXI.Point(-FRAMES.BOUNDS.left, -FRAMES.BOUNDS.top),
-				right: new PIXI.Point(+FRAMES.BOUNDS.right, -FRAMES.BOUNDS.top),
-			},
-			bottom:{
-				left: new PIXI.Point(-FRAMES.BOUNDS.left, +FRAMES.BOUNDS.bottom),
-				right: new PIXI.Point(+FRAMES.BOUNDS.right, +FRAMES.BOUNDS.bottom),
-			}
-		};
-        // this.updateTransform();
-
-		var bbox = this.getBounds(PIXI.Matrix.IDENTITY.translate(this.x, this.y));
-
 		this.edgePoints = { // global
             left_x:    this.x - FRAMES.BOUNDS.left,
             right_x:   this.x + FRAMES.BOUNDS.right,
             top_y:     this.y - FRAMES.BOUNDS.top,
             bottom_y:  this.y + FRAMES.BOUNDS.bottom,
-            width : bbox.width,
-			height: bbox.height,
+            width : FRAMES.width,
+			height: FRAMES.height,
 		};
 		return this.edgePoints;
 	};
