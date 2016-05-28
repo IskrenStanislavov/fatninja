@@ -195,7 +195,7 @@ var KeyHandlersInit = false; //single handlers only
 			null:["idle"],
 			"die":["null"],
 			"idle": ["jump", "walk", "stun", "die"],
-			"jump_down": ["jump_over", "jump_land"],
+			"jump_down": ["jump_over", "jump_down", "jump_land"],
 			"jump_land": ["idle", "walk", "jump"],
 			"jump_over": ["idle", "walk"],
 			"jump": ["jump_down", ],
@@ -327,18 +327,19 @@ var KeyHandlersInit = false; //single handlers only
 				break;
 				case "fall":
 				case "jump_down":
-					var nextStateGetter = this.ACTIONS["jump_down"].next;
-					TweenMax.killTweensOf(this.position, {y:true});
-					TweenMax.to(this.position, JUMP.TWEEN_TIME, {
-						y: this.y + this.getHeight(),
-						ease: JUMP.FALL_EASING,
-						onComplete: !!nextStateGetter && function() {
-							var newState = nextStateGetter({self:this}); 
-							if (newState!=this._state){
-								this.setState(newState);
-							}
-						}.bind(this),
-					});
+					if (this.getHeight()<2){
+						this.setState(this.ACTIONS["jump_down"].next({self:this}));
+					} else {
+
+						TweenMax.killTweensOf(this.position, {y:true});
+						TweenMax.to(this.position, FALL.TWEEN_TIME, {
+							y: this.y + Math.min(FALL.HEIGHT, this.getHeight()),
+							ease: FALL.EASING,
+							onComplete: function() {
+								this.setState("jump_down");
+							}.bind(this),
+						});
+					}
 				break;
 				case "jump_land":
 					this.jump_land.onComplete = function(){
@@ -360,7 +361,7 @@ var KeyHandlersInit = false; //single handlers only
 		if (!this.platformData){
 			return 0;
 		}
-		return (this.platformData.top_y - this.edgePoints.bottom_y);
+		return Math.abs(this.platformData.top_y - this.edgePoints.bottom_y);
 	};
 
 
@@ -370,10 +371,6 @@ var KeyHandlersInit = false; //single handlers only
 			this.setState("jump_down");
 		}
 
-	};
-
-
-	Character.prototype.fallOn = function(){
 	};
 
 
