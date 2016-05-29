@@ -12,7 +12,7 @@ define(function(require){
     require("PIXI");
     require("GSAP");
     require("js/extendPIXI");
-    window.DEV = false;
+    window.DEV = 1;
     var OnLoad          = require("js/customLoader");
     var Stage           = require("libs/stage");
     var Dekor           = require("js/dekor");
