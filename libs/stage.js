@@ -1,9 +1,9 @@
 define(function(require) {
-    var PIXI        = require("libs/pixi");
+    var PIXI        = require("PIXI");
     require('../node_modules/zepto/zepto.min');
 
-    var Stage = function( settings ){
-        this.renderer = PIXI.autoDetectRenderer(100, 100, {
+    var Stage = function( settings, onUpdateFunction ){
+        this.renderer = PIXI.autoDetectRenderer(settings.sizes.width, settings.sizes.height, {
             "view":document.getElementById((settings && settings.canvasId) || "game"),
             "clearBeforeRender":false,
             "transparent": false,
@@ -15,20 +15,37 @@ define(function(require) {
         document.body.appendChild(this.canvas);
 
         this.color = (settings && settings.stageColor) || "black";
-        PIXI.Stage.call(this, this.color);
+        PIXI.Container.call(this);
 
 
-        // if ( settings && settings.debugBG ) {
-        //     this.addChild(new PIXI.Graphics().beginFill("red",1.0).drawRect(0,0,100,200).endFill());
-        // }
+        this.fittable = {
+            W: settings.sizes.width,
+            H: settings.sizes.height,
+        };
+        this.renderer.resize(this.fittable.W, this.fittable.H)
 
-        this.fittable = null;
+        if ( settings && settings.stageColor ) {// 0xBEDAFF
+            this.addChild(new PIXI.Graphics())
+                .beginFill(settings.stageColor,1.0)
+                .drawRect(0,0,this.fittable.W, this.fittable.H)
+                .endFill();
+        }
+
         this.autoFitListeners();
+        if (onUpdateFunction){
+            this.update = function(){
+                this.resize();
+                onUpdateFunction();
+                this.renderer.render(this);
+                requestAnimationFrame(this.update.bind(this));
+            }.bind(this);
+        }
         this.update();
+        this.disableContextMenu();
     };
 
 
-    Stage.prototype = Object.create( PIXI.Stage.prototype );
+    Stage.prototype = Object.create( PIXI.Container.prototype );
 
     Stage.prototype._getChildAt = Stage.prototype.getChildAt;
 
@@ -42,21 +59,10 @@ define(function(require) {
     Stage.prototype.update = function(){
         this.resize();
         this.renderer.render(this);
-        requestAnimFrame(this.update.bind(this));
+        requestAnimationFrame(this.update.bind(this));
     };
 
     Stage.prototype.setAutoFit = function() {
-        if (this.children.length===0) {
-            return;
-        }
-        this.fittable = {
-            W: this.getChildAt(0).width,
-            H: this.getChildAt(0).height,
-        };
-        if ( !this.fittable.W || !this.fittable.H ){
-            return;
-        }
-        this.renderer.resize(this.fittable.W, this.fittable.H)
 
     };
 
@@ -80,11 +86,6 @@ define(function(require) {
     };
 
     Stage.prototype.resize = function() {
-        this.setAutoFit();
-        if ( !this.fittable || !this.fittable.H ||!this.fittable.W ){
-            return;
-        }
-
         //we neeed the current; XXX: may store it n update it on orientation changes
         //XXX: can store the scale factors for both orientations
         //XXX: and change the chosen one on each orientation change
@@ -105,8 +106,10 @@ define(function(require) {
 
         scale = Math.min(scale, 1);
 
-        $(this.canvas).css("width", Math.floor(this.fittable.W * scale));
-        $(this.canvas).css("height", Math.floor(this.fittable.H * scale));
+        $(this.canvas).css({
+            "width": Math.floor(this.fittable.W * scale),
+            "height": Math.floor(this.fittable.H * scale)
+        });
     };
 
     return Stage; 

@@ -48,6 +48,14 @@ Array.prototype.range = function(start,end){
 	});
 };
 
+Array.prototype.remove = function(obj){
+	var index = this.indexOf(obj);
+	if (index>=0){
+		return this.splice(index, 1);
+	}
+	// return null;
+};
+
 Array.prototype.shuffle = function(){
 	var result = [];
 	while(this.length > 0 ){
@@ -56,6 +64,11 @@ Array.prototype.shuffle = function(){
 	return result;
 };
 
+Object.values = Object.values || function(instance){
+	return Object.keys(instance).map(function(key){
+		return instance[key];
+	});
+};
 
 define(function(require){
 	return;
