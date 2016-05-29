@@ -327,15 +327,24 @@ var KeyHandlersInit = false; //single handlers only
 				break;
 				case "fall":
 				case "jump_down":
-					if (this.getHeight()<2){
-						this.setState(this.ACTIONS["jump_down"].next({self:this}));
-					} else {
-
+					if (this.getHeight() <= FALL.HEIGHT){
 						TweenMax.killTweensOf(this.position, {y:true});
 						TweenMax.to(this.position, FALL.TWEEN_TIME, {
-							y: this.y + Math.min(FALL.HEIGHT, this.getHeight()),
+							y: this.y + this.getHeight()-1,
 							ease: FALL.EASING,
 							onComplete: function() {
+								this.setState(this.ACTIONS["jump_down"].next({self:this}));
+							}.bind(this),
+						});
+
+					} else {
+						TweenMax.killTweensOf(this.position, {y:true});
+						this.y = Math.floor(this.y);
+						TweenMax.to(this.position, FALL.TWEEN_TIME, {
+							y: this.y + FALL.HEIGHT,
+							ease: FALL.EASING,
+							onComplete: function() {
+								this.y = Math.floor(this.y);
 								this.setState("jump_down");
 							}.bind(this),
 						});
@@ -361,13 +370,15 @@ var KeyHandlersInit = false; //single handlers only
 		if (!this.platformData){
 			return 0;
 		}
-		return Math.abs(this.platformData.top_y - this.edgePoints.bottom_y);
+		this.getBodyEdgePoints();//position changed
+		return this.platformData.top_y - this.edgePoints.bottom_y;
 	};
 
 
 	Character.prototype.abovePlatform = function(platformData){
 		this.platformData = platformData;
-		if (this._state == "walk" && this.getHeight() > 2){
+		if ("walk idle".indexOf(this._state)>=0 && this.getHeight() > 2){
+			// debugger;
 			this.setState("jump_down");
 		}
 

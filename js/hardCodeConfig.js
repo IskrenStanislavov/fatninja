@@ -35,10 +35,11 @@ define(function(require) {
         TWEEN_TIME: 0.3,//sec
         EASING: Power2.EaseOut,
     };
-    var FALL_DELTA = 20;
+    var JUMP_SPEED = JUMP.HEIGHT / JUMP.TWEEN_TIME; 
+    var FALL_STEPS = 20;
     window.FALL = {
-        HEIGHT: FALL_DELTA,//px
-        TWEEN_TIME: JUMP.TWEEN_TIME * FALL_DELTA / JUMP.HEIGHT,//sec
+        HEIGHT: Math.floor(JUMP.HEIGHT / FALL_STEPS),//px
+        TWEEN_TIME: JUMP.TWEEN_TIME / FALL_STEPS,//sec
         EASING: Power0.EaseNone
     };
     window.WALK = {
