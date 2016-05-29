@@ -6,13 +6,13 @@ require.config({
     }
 });
 
+window.DEV = 0;
 define(function(require){
     require("libs/functions");
     require("js/hardCodeConfig");
     require("PIXI");
     require("GSAP");
     require("js/extendPIXI");
-    window.DEV = 0;
     var OnLoad          = require("js/customLoader");
     var Stage           = require("libs/stage");
     var Dekor           = require("js/dekor");
