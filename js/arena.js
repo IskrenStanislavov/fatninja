@@ -6,7 +6,7 @@ require.config({
     }
 });
 
-window.DEV = 0;
+window.DEV = true;
 define(function(require){
     require("libs/functions");
     require("js/hardCodeConfig");
@@ -30,12 +30,12 @@ define(function(require){
                     this.renderedOnce|=1;
                     arena.ninji[0].listeners();
                     if (DEV){
-                        arena.ninji[0].testScenario("jump:idle");
-                        arena.ninji[1].testScenario("jump:right");
-                        arena.ninji[2].testScenario("jump:left");
-                        arena.ninji[3].testScenario("walk:left");
-                        arena.ninji[4].testScenario("walk:right");
-                        arena.ninji[5].testScenario("walk:right");
+                        // arena.ninji[0].testScenario("jump:idle");
+                        // arena.ninji[1].testScenario("jump:right");
+                        // arena.ninji[2].testScenario("jump:left");
+                        // arena.ninji[3].testScenario("walk:left");
+                        // arena.ninji[4].testScenario("walk:right");
+                        // arena.ninji[5].testScenario("walk:right");
                         arena.staticObjects.forEach(function(ground){
                             ground.logPositions();
                         });
@@ -68,7 +68,7 @@ define(function(require){
                 skin:skin,
             }));
             ninja.position.copy(position);
-            if (DEV){
+            if (DEV && 0){
                 ninja.logPositions();
             }
             return ninja;
@@ -76,11 +76,28 @@ define(function(require){
         this.me = this.ninji[0];
     };
     Arena.prototype.applyChecks = function(){
-        this.ninji.forEach(function(ninja){
+        var ninjiEdgePoints = [];
+        this.ninji.forEach(function(ninja, index){
+            var edges = ninja.getBodyEdgePoints();
             if ( ninja._state.indexOf("jump") != -1 || ninja._state == "walk" ){
-                var platformData = Maths.closestToLand(ninja.getBodyEdgePoints(),this.staticEdgePoints);
+                var platformData = Maths.closestToLand(edges, this.staticEdgePoints);
                 ninja.abovePlatform(platformData);
            }
+           ninjiEdgePoints.forEach(function(otherEdges, indexOtherNinja){
+                var in_x_range = (Math.abs(otherEdges.position.x - edges.position.x) < edges.width);
+                if (in_x_range){
+                    var other = this.ninji[indexOtherNinja];
+                    var y_delta = otherEdges.position.y - edges.position.y;
+                    if ( y_delta > 0 ){ // ninja is higher other, still not above
+                        ninja.tryHit(other, otherEdges);
+                    } else {
+                        other.tryHit(ninja, edges);
+                    }
+                }
+           }.bind(this));
+           //push after ninja-ninja checks
+           ninjiEdgePoints.push(edges);
+
         }.bind(this));
     };
 
