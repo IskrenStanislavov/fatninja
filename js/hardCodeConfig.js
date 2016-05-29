@@ -23,8 +23,12 @@ define(function(require) {
             right: 32,
             top:  -5,
             bottom:77,
+            width: -1,//calculated below
+            height: -1,//calculated below
         },
     };
+    FRAMES.BOUNDS.width = FRAMES.BOUNDS.left + FRAMES.BOUNDS.right; 
+    FRAMES.BOUNDS.height = FRAMES.BOUNDS.top + FRAMES.BOUNDS.bottom; 
     window.STAGE_BOUNDS = {
         left : FRAMES.BOUNDS.left,
         right: GAME_SIZE.W - FRAMES.BOUNDS.right,
