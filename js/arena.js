@@ -28,35 +28,38 @@ define(function(require){
             if (!!this.initialized){
                 if(!this.renderedOnce){
                     this.renderedOnce|=1;
-                    arena.ninji[0].listeners();
-                    if (DEV){
-                        // arena.ninji[0].testScenario("jump:idle");
-                        // arena.ninji[1].testScenario("jump:right");
-                        // arena.ninji[2].testScenario("jump:left");
-                        // arena.ninji[3].testScenario("walk:left");
-                        // arena.ninji[4].testScenario("walk:right");
-                        // arena.ninji[5].testScenario("walk:right");
-                        arena.staticObjects.forEach(function(ground){
-                            ground.logPositions();
-                        });
-                    }
+                    // if (DEV){
+                    //     // arena.ninji[0].testScenario("jump:idle");
+                    //     // arena.ninji[1].setState("jump_over");
+                    //     // arena.ninji[2].setState("jump_land");
+                    //     // arena.ninji[2].testScenario("jump:left");
+                    //     // arena.ninji[3].testScenario("walk:left");
+                    //     // arena.ninji[4].testScenario("walk:right");
+                    //     // arena.ninji[5].testScenario("walk:right");
+                    //     arena.staticObjects.forEach(function(ground){
+                    //         ground.logPositions();
+                    //     });
+                    // }
                 }
                 this.applyChecks();
             }
         }.bind(this));
         this.addChild(new Dekor());
         this.initArena();
+        this.ninji[0].listeners();
         this.initialized=true;
     };
     Arena.prototype = Object.create(Stage.prototype);
     Arena.prototype.initArena = function(){
+        var groundContainer = this.addChild(new PIXI.Container());
+        this.groundContainer = groundContainer;
         var arena = this.addChild(new PIXI.Container());
         this.arena = arena;
         // this.getRenderMoment();
         //TODO: make ground solid
         this.staticEdgePoints = [];
         this.staticObjects = GROUND_DATA.map(function(data){
-            var ground = this.addChild(new Ground(data));
+            var ground = this.groundContainer.addChild(new Ground(data));
             this.staticEdgePoints.push(ground.getBodyEdgePoints());
             return ground;
         }.bind(this));
