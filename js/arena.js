@@ -6,7 +6,7 @@ require.config({
     }
 });
 
-window.DEV = 1;
+window.DEV = true;
 define(function(require){
     require("libs/functions");
     require("js/hardCodeConfig");
