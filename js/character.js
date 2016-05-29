@@ -36,12 +36,14 @@ var KeyHandlersInit = false; //single handlers only
 
 		//jump over
 		this.jump_over = this.STATES.jump_over = this.addChild(PIXI.MakeMovie(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
+		this.jump_over.loop = false;
 
 		//jump up
 		this.jump = this.STATES.jump = this.addChild(PIXI.MakeMovie(1,1, "jump_up/jump_up(%s).png", this.settings.skin.tint));
 
 		//stun
 		this.stun = this.STATES.stun = this.addChild(PIXI.MakeMovie(1,18, "stun/stun (%s).png", this.settings.skin.tint));
+		this.stun.loop = false;
 
 		//walk
 		this.walk = this.STATES.walk = this.addChild(PIXI.MakeMovie(1,6, "walk/walk (%s).png", this.settings.skin.tint));
@@ -167,7 +169,7 @@ var KeyHandlersInit = false; //single handlers only
 			"stun": {
 				animation: "stun",
 				next : function(args){
-					if (!args.self.hasMove()){
+					if (!!args.self.hasMove()){
 						return "walk";
 					}
 					return "idle";
@@ -327,42 +329,49 @@ var KeyHandlersInit = false; //single handlers only
 				break;
 				case "fall":
 				case "jump_down":
-					if (this.getHeight() <= FALL.HEIGHT){
-						TweenMax.killTweensOf(this.position, {y:true});
-						TweenMax.to(this.position, FALL.TWEEN_TIME, {
-							y: this.y + this.getHeight()-1,
-							ease: FALL.EASING,
-							onComplete: function() {
-								this.setState(this.ACTIONS["jump_down"].next({self:this}));
-							}.bind(this),
-						});
-
-					} else {
-						TweenMax.killTweensOf(this.position, {y:true});
-						this.y = Math.floor(this.y);
-						TweenMax.to(this.position, FALL.TWEEN_TIME, {
-							y: this.y + FALL.HEIGHT,
-							ease: FALL.EASING,
-							onComplete: function() {
-								this.y = Math.floor(this.y);
-								this.setState("jump_down");
-							}.bind(this),
-						});
-					}
+					var isLanding = (this.getHeight() <= FALL.HEIGHT);
+					this.y = Math.floor(this.y);
+					TweenMax.killTweensOf(this.position, {y:true});
+					var onComplete = function() {
+						if (isLanding){
+							this.setState(this.ACTIONS["jump_down"].next({self:this}));
+						} else {
+							this.y = Math.floor(this.y);
+							this.setState("jump_down");
+						}
+					}.bind(this)
+					TweenMax.to(this.position, FALL.TWEEN_TIME, {
+						y: this.y + Math.min(this.getHeight()-1,FALL.HEIGHT),
+						ease: FALL.EASING,
+						onComplete: onComplete.bind(this),
+					});
 				break;
 				case "jump_land":
 					this.jump_land.onComplete = function(){
+						this.jump_land.onComplete = null;
 						var nextStateGetter = this.ACTIONS["jump_land"].next;
 						this.setState(nextStateGetter({self:this}));
 					}.bind(this);
 				break;
+				case "stun":
+					this.stun.onComplete = function(){
+						this.stun.onComplete = null;
+						var nextStateGetter = this.ACTIONS["stun"].next;
+						this.setState(nextStateGetter({self:this}));
+					}.bind(this);
+				break;
 			}
-			m.play && m.play();
+			m.play && m.gotoAndPlay(0);
 		} else {
 			var msg = "Inappropriate state transition" + this._state + "->" + newState;
 			console.log(msg);
 			throw msg;
 		}
+	};
+
+
+	Character.prototype.hasMove = function(){
+		return false;
 	};
 
 
@@ -391,10 +400,26 @@ var KeyHandlersInit = false; //single handlers only
             right_x:   this.x + FRAMES.BOUNDS.right,
             top_y:     this.y - FRAMES.BOUNDS.top,
             bottom_y:  this.y + FRAMES.BOUNDS.bottom,
-            width : FRAMES.width,
-			height: FRAMES.height,
+            position: this.position.clone(),
+            width : FRAMES.BOUNDS.width,
+			height: FRAMES.BOUNDS.height,
 		};
+		this.edges = this.edgePoints;
 		return this.edgePoints;
+	};
+
+	Character.prototype.isAlive = function(){
+		return "stun die".indexOf(this._state) < 0
+	};
+
+	Character.prototype.tryHit = function(other, otherEdges){
+		if (this._state == "jump_down" && other.isAlive()){ // other is higher, still not above
+			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
+		    if ( y_deltaMod > FALL.HEIGHT && y_deltaMod < this.edges.height) { // yes it's above, but might not be enough for splash
+	            other.setState("stun");
+	            // debugger; // hit a splash
+		    }
+		}
 	};
 
 
