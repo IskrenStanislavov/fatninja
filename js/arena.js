@@ -27,15 +27,15 @@ define(function(require){
         Stage.call(this, STAGE_INIT_DATA, function(){//on render
             if (!!this.initialized){
                 if(!this.renderedOnce){
-                    this.renderedOnce|=true;
-                    arena.ninji[0].testScenario("jump:idle");
+                    this.renderedOnce|=1;
                     arena.ninji[0].listeners();
-                    arena.ninji[1].testScenario("jump:right");
-                    arena.ninji[2].testScenario("jump:left");
-                    arena.ninji[3].testScenario("walk:left");
-                    arena.ninji[4].testScenario("walk:right");
-                    arena.ninji[5].testScenario("walk:right");
                     if (DEV){
+                        arena.ninji[0].testScenario("jump:idle");
+                        arena.ninji[1].testScenario("jump:right");
+                        arena.ninji[2].testScenario("jump:left");
+                        arena.ninji[3].testScenario("walk:left");
+                        arena.ninji[4].testScenario("walk:right");
+                        arena.ninji[5].testScenario("walk:right");
                         arena.staticObjects.forEach(function(ground){
                             ground.logPositions();
                         });
