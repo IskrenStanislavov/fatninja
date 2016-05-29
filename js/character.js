@@ -16,6 +16,7 @@ var KeyHandlersInit = false; //single handlers only
 		this.initStateAnimations();
 		this.doAction("idle");
 		this.doJump = false;
+		this.lives = NUMBER_OF_LIVES;
 	};
 
 	Character.prototype = Object.create(PIXI.Container.prototype);
@@ -23,6 +24,7 @@ var KeyHandlersInit = false; //single handlers only
 	Character.prototype.initStateAnimations = function(){
 		//die
 		this.die = this.STATES.die = this.addChild(PIXI.MakeMovie(1,27, "die/die (%s).png", this.settings.skin.tint));
+		this.die.loop = false;
 
 		//idle
 		this.idle = this.STATES.idle = this.addChild(PIXI.MakeMovie(1,1, "idle/idle (%s).png", this.settings.skin.tint));
@@ -157,6 +159,7 @@ var KeyHandlersInit = false; //single handlers only
 				state: "transit",//empty
 				animation: undefined,//empty
 				next : function(args){
+					args.self.lives --;
 					if (!!args.self.hasLives()){
 						return "stun";
 					}
@@ -354,14 +357,32 @@ var KeyHandlersInit = false; //single handlers only
 					}.bind(this);
 				break;
 				case "stun":
+					var loopCount = 0;
 					this.stun.onComplete = function(){
-						this.stun.onComplete = null;
-						var nextStateGetter = this.ACTIONS["stun"].next;
-						this.setState(nextStateGetter({self:this}));
+						loopCount ++;
+						if (this._state == "stun"){ // state might have gone to 'die' // 'idle' after 'die'
+							if (loopCount>=2){
+								this.stun.onComplete = null;	
+								var nextStateGetter = this.ACTIONS["stun"].next;
+								this.setState(nextStateGetter({self:this}));
+							} else {
+								this.stun.gotoAndPlay(0);
+							}
+						} else {
+							this.stun.stop();
+							this.stun.onComplete = null;	
+						}
 					}.bind(this);
 				break;
 			}
 			m.play && m.gotoAndPlay(0);
+		} else if (this.ACTIONS[newState].state == "transit"){
+			if (this._state != "idle"){
+				this.getStateAnimation().stop();
+			}
+			var nextStateGetter = this.ACTIONS[newState].next;
+			this.setState(nextStateGetter({self:this}));
+
 		} else {
 			var msg = "Inappropriate state transition" + this._state + "->" + newState;
 			console.log(msg);
@@ -408,15 +429,19 @@ var KeyHandlersInit = false; //single handlers only
 		return this.edgePoints;
 	};
 
-	Character.prototype.isAlive = function(){
-		return "stun die".indexOf(this._state) < 0
+	Character.prototype.canBeHit = function(){
+		return "walk idle".indexOf(this._state) >= 0;
+	};
+
+	Character.prototype.hasLives = function(){
+		return this.lives > 0;
 	};
 
 	Character.prototype.tryHit = function(other, otherEdges){
-		if (this._state == "jump_down" && other.isAlive()){ // other is higher, still not above
+		if (this._state == "jump_down" && other.canBeHit()){ // other is higher, still not above
 			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
 		    if ( y_deltaMod > FALL.HEIGHT && y_deltaMod < this.edges.height) { // yes it's above, but might not be enough for splash
-	            other.setState("stun");
+	            other.setState("hit");
 	            // debugger; // hit a splash
 		    }
 		}

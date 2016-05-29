@@ -2,6 +2,7 @@ define(function(require) {
     require("GSAP");
     var PIXI = require("PIXI");
 
+    window.NUMBER_OF_LIVES = !!window.DEV?2:10;
     window.GAME_SIZE = {
         W:1280,
         H:860
