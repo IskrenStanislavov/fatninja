@@ -401,7 +401,7 @@ var KeyHandlersInit = false; //single handlers only
 //DBG stuff
 	Character.prototype.logPositions = function(){
 		this.getBodyEdgePoints();
-		var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.1).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
+		// var animationBBOX = this.addChild(new PIXI.Graphics()).clear().beginFill(this.settings.skin.tint, 0.1).drawRect(-FRAMES.width/2, -FRAMES.height/2, FRAMES.width, FRAMES.height).endFill();
 		var hitZone = this.addChild(new PIXI.Graphics())
 			.clear()
 			.beginFill(this.settings.skin.tint, 0.7)
