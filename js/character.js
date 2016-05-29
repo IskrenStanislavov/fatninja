@@ -38,6 +38,7 @@ var KeyHandlersInit = false; //single handlers only
 
 		//jump over
 		this.jump_over = this.STATES.jump_over = this.addChild(PIXI.MakeMovie(1,3, "jump_over/jump_over (%s).png", this.settings.skin.tint));
+		this.jump_over.animationSpeed/=3;
 		this.jump_over.loop = false;
 
 		//jump up
@@ -148,9 +149,22 @@ var KeyHandlersInit = false; //single handlers only
 					right: DIRECTIONS.Right,
 				}
 			},
-			"splash": {
+			"jump_over": {
 				animation: "jump_over",//ninja
-				next : function(args){return ["stun", "die"][0]},
+				toDirection: function(args){
+					debugger;
+					args.self.setDirection(DIRECTIONS.Idle);
+				},
+				next : function(args){
+					debugger;
+					if (args.self.doJump){
+						return "jump";
+					}
+					if (!!args.self.directionInterval){
+						return "walk";
+					}
+					return "idle";
+				},
 				directions: {
 					idle: DIRECTIONS.Idle,
 				}
@@ -199,18 +213,18 @@ var KeyHandlersInit = false; //single handlers only
 		this.FSM = {
 			null:["idle"],
 			"die":["null"],
-			"idle": ["jump", "walk", "stun", "die"],
+			"idle": ["jump", "walk", "stun", "die", "jump_over", "jump_land"],
 			"jump_down": ["jump_over", "jump_down", "jump_land"],
 			"jump_land": ["idle", "walk", "jump"],
-			"jump_over": ["idle", "walk"],
+			"jump_over": ["idle", "jump_down", "walk"],
 			"jump": ["jump_down", ],
 			"stun": ["stun", "idle", "walk", "jump"],
 			"walk": [
 				"die",
 				"idle",
 				"jump_down",
-				"jump_land",
-				"jump_over",
+				// "jump_land",
+				// "jump_over",
 				"jump",
 				"stun",
 				"walk",
@@ -356,6 +370,16 @@ var KeyHandlersInit = false; //single handlers only
 						this.setState(nextStateGetter({self:this}));
 					}.bind(this);
 				break;
+				case "jump_over":
+					TweenMax.killTweensOf(this.position, {y:true});
+
+					this.jump_over.onUpdate = function(){
+						debugger;
+						this.jump_over.onComplete = null;
+						var nextStateGetter = this.ACTIONS["jump_over"].next;
+						this.setState(nextStateGetter({self:this}));
+					}.bind(this);
+				break;
 				case "stun":
 					var loopCount = 0;
 					this.stun.onComplete = function(){
@@ -442,6 +466,7 @@ var KeyHandlersInit = false; //single handlers only
 			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
 		    if ( y_deltaMod > FALL.HEIGHT && y_deltaMod < this.edges.height) { // yes it's above, but might not be enough for splash
 	            other.setState("hit");
+	        	// this.setState("jump_over");
 	            // debugger; // hit a splash
 		    }
 		}
