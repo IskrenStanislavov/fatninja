@@ -12,7 +12,7 @@ define(function(require){
     require("PIXI");
     require("GSAP");
     require("js/extendPIXI");
-
+    window.DEV = false;
     var OnLoad          = require("js/customLoader");
     var Stage           = require("libs/stage");
     var Dekor           = require("js/dekor");
@@ -35,10 +35,11 @@ define(function(require){
                     arena.ninji[3].testScenario("walk:left");
                     arena.ninji[4].testScenario("walk:right");
                     arena.ninji[5].testScenario("walk:right");
-                    arena.staticObjects.forEach(function(ground){
-                        ground.logPositions();
-                    });
-                    
+                    if (DEV){
+                        arena.staticObjects.forEach(function(ground){
+                            ground.logPositions();
+                        });
+                    }
                 }
                 this.applyChecks();
             }
@@ -67,7 +68,9 @@ define(function(require){
                 skin:skin,
             }));
             ninja.position.copy(position);
-            ninja.logPositions();
+            if (DEV){
+                ninja.logPositions();
+            }
             return ninja;
         });
         this.me = this.ninji[0];
