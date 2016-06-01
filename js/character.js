@@ -464,10 +464,8 @@ var KeyHandlersInit = false; //single handlers only
 	Character.prototype.tryHit = function(other, otherEdges){
 		if (this._state == "jump_down" && other.canBeHit()){ // other is higher, still not above
 			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
-		    if ( y_deltaMod > FALL.HEIGHT && y_deltaMod < this.edges.height) { // yes it's above, but might not be enough for splash
+		    if ( y_deltaMod < this.edges.height+ FALL.HEIGHT && y_deltaMod > this.edges.height) {
 	            other.setState("hit");
-	        	// this.setState("jump_over");
-	            // debugger; // hit a splash
 		    }
 		}
 	};
