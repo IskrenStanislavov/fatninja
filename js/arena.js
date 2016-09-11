@@ -28,7 +28,7 @@ define(function(require){
             if (!!this.initialized){
                 if(!this.renderedOnce){
                     this.renderedOnce|=1;
-                    // if (DEV){
+                    if (DEV){
                     //     // arena.ninji[0].testScenario("jump:idle");
                     //     // arena.ninji[1].setState("jump_over");
                     //     // arena.ninji[2].setState("jump_land");
@@ -36,10 +36,10 @@ define(function(require){
                     //     // arena.ninji[3].testScenario("walk:left");
                     //     // arena.ninji[4].testScenario("walk:right");
                     //     // arena.ninji[5].testScenario("walk:right");
-                    //     arena.staticObjects.forEach(function(ground){
-                    //         ground.logPositions();
-                    //     });
-                    // }
+                        arena.staticObjects.forEach(function(ground){
+                            ground.logPositions();
+                        });
+                    }
                 }
                 this.applyChecks();
             }
@@ -71,7 +71,7 @@ define(function(require){
                 skin:skin,
             }));
             ninja.position.copy(position);
-            if (DEV && 0){
+            if (DEV){
                 ninja.logPositions();
             }
             return ninja;
