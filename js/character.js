@@ -466,6 +466,7 @@ var KeyHandlersInit = false; //single handlers only
 			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
 		    if ( y_deltaMod < this.edges.height+ FALL.HEIGHT && y_deltaMod > this.edges.height) {
 	            other.setState("hit");
+	            // this.setState("jump_over");
 		    }
 		}
 	};
