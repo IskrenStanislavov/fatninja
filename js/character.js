@@ -132,6 +132,8 @@ var KeyHandlersInit = false; //single handlers only
 					args.self.setDirection(DIRECTIONS[args.direction]);
 				},
 				setIdle: function(args){
+					console.log("asdfghjklmn:", args);
+					TweenMax.killTweensOf(args.self);
 					args.self.setDirection(DIRECTIONS.Idle);
 				},
 				next : function(args){
@@ -315,6 +317,7 @@ var KeyHandlersInit = false; //single handlers only
 	Character.prototype.checkStateTransition = function(newState){
 		var oldState = this._state;
 
+		console.log("===>" + oldState + "-->" + newState);
 		if (this.FSM[oldState].indexOf(newState)>-1){
 			return true;
 		// } else if (oldState == newState){
@@ -464,7 +467,7 @@ var KeyHandlersInit = false; //single handlers only
 	Character.prototype.tryHit = function(other, otherEdges){
 		if (this._state == "jump_down" && other.canBeHit()){ // other is higher, still not above
 			var y_deltaMod = Math.abs(otherEdges.position.y - this.edges.position.y);
-		    if ( y_deltaMod < this.edges.height+ FALL.HEIGHT && y_deltaMod > this.edges.height) {
+		    if ( y_deltaMod < this.edges.height + FALL.HEIGHT && y_deltaMod > this.edges.height) {
 	            other.setState("hit");
 	            // this.setState("jump_over");
 		    }
