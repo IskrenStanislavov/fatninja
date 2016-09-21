@@ -67,7 +67,8 @@ define(function(require){
         //TODO: place Characters automaticaly on the top of some ground.
         this.ninji = NINJA_START_POINTS.map(function(position, index){
             var skin = SKINS[index];
-            var ninja = arena.addChild(new Character({
+            var name = (index == 0) ? "ME" : "other_ninja";
+            var ninja = arena.addChild(new Character(name, {
                 skin:skin,
             }));
             ninja.position.copy(position);
@@ -77,14 +78,19 @@ define(function(require){
             return ninja;
         });
         this.me = this.ninji[0];
+
     };
     Arena.prototype.applyChecks = function(){
         var ninjiEdgePoints = [];
         this.ninji.forEach(function(ninja, index){
             var edges = ninja.getBodyEdgePoints();
-            if ( ninja._state.indexOf("jump") != -1 || ninja._state == "walk" ){
+            if ( ninja._state != "idle" || TweenMax.isTweening(ninja.position) ){
                 var platformData = Maths.closestToLand(edges, this.staticEdgePoints);
                 ninja.abovePlatform(platformData);
+                if (!ninja.hasLanded() && ninja._state.indexOf("jump") == -1 ){
+                    ninja.setState("jump_down");
+                }
+
            }
            ninjiEdgePoints.forEach(function(otherEdges, indexOtherNinja){
                 var in_x_range = (Math.abs(otherEdges.position.x - edges.position.x) < edges.width);
@@ -102,6 +108,7 @@ define(function(require){
            ninjiEdgePoints.push(edges);
 
         }.bind(this));
+
     };
 
     OnLoad(function(){

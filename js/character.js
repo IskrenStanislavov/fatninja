@@ -7,8 +7,9 @@ define(function(require) {
     require("./hardCodeConfig");
 
 var KeyHandlersInit = false; //single handlers only
-	var Character = function(settings){
+	var Character = function(name, settings){
 		PIXI.Container.call(this);
+		this._a_name = name;
 		this.settings = settings;
 		this._state = "null";
 		this.facingDirection = (Math.random()>0.5 ? DIRECTIONS.Left : DIRECTIONS.Right);
@@ -81,6 +82,7 @@ var KeyHandlersInit = false; //single handlers only
 
 				},
 				setIdle: function(args){
+
 					args.self.setDirection(DIRECTIONS.Idle);
 					args.self.setState("idle");
 				},
@@ -132,11 +134,17 @@ var KeyHandlersInit = false; //single handlers only
 					args.self.setDirection(DIRECTIONS[args.direction]);
 				},
 				setIdle: function(args){
-					console.log("asdfghjklmn:", args);
-					TweenMax.killTweensOf(args.self);
+					// if (!args.self.hasLanded()){
+					// 	args.self.setState("jump_down");
+					// 	return;
+					// }
+					// TweenMax.killTweensOf(args.self);
 					args.self.setDirection(DIRECTIONS.Idle);
 				},
 				next : function(args){
+					// if (!args.self.hasLanded()){
+					// 	return "jump_down";
+					// }
 					if (args.self.doJump){
 						return "jump";
 					}
@@ -215,9 +223,9 @@ var KeyHandlersInit = false; //single handlers only
 		this.FSM = {
 			null:["idle"],
 			"die":["null"],
-			"idle": ["jump", "walk", "stun", "die", "jump_over", "jump_land"],
+			"idle": ["jump", "walk", "stun", "die", "jump_over", "jump_land", "jump_down"],
 			"jump_down": ["jump_over", "jump_down", "jump_land"],
-			"jump_land": ["idle", "walk", "jump"],
+			"jump_land": ["idle", "walk", "jump", "jump_down"],
 			"jump_over": ["idle", "jump_down", "walk"],
 			"jump": ["jump_down", ],
 			"stun": ["stun", "idle", "walk", "jump"],
@@ -349,11 +357,11 @@ var KeyHandlersInit = false; //single handlers only
 				break;
 				case "fall":
 				case "jump_down":
-					var isLanding = (this.getHeight() <= FALL.HEIGHT);
+					// var isLanding = (this.getHeight() <= FALL.HEIGHT);
 					this.y = Math.floor(this.y);
 					TweenMax.killTweensOf(this.position, {y:true});
 					var onComplete = function() {
-						if (isLanding){
+						if (this.hasLanded()){
 							this.setState(this.ACTIONS["jump_down"].next({self:this}));
 						} else {
 							this.y = Math.floor(this.y);
@@ -422,6 +430,9 @@ var KeyHandlersInit = false; //single handlers only
 		return false;
 	};
 
+	Character.prototype.hasLanded = function(){
+		return (this.getHeight() <= 3);
+	};
 
 	Character.prototype.getHeight = function(){
 		if (!this.platformData){
@@ -434,10 +445,10 @@ var KeyHandlersInit = false; //single handlers only
 
 	Character.prototype.abovePlatform = function(platformData){
 		this.platformData = platformData;
-		if ("walk idle".indexOf(this._state)>=0 && this.getHeight() > 2){
-			// debugger;
-			this.setState("jump_down");
-		}
+		// if ("walk idle".indexOf(this._state)>=0 && this.getHeight() > 2){
+		// 	// debugger;
+		// 	this.setState("jump_down");
+		// }
 
 	};
 
