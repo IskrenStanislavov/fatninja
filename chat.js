@@ -1,7 +1,7 @@
 /*  Copyright (c) http://socket.io/get-started/chat/ 
 
     MIT Licensed. See LICENSE for full license.
-    Usage : node ninja.js
+    Usage : node chat.js
 */
 
 var gameport        = process.env.PORT || 8080;
