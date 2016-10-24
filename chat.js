@@ -1,12 +1,10 @@
-/*  Copyright (c) 2012 Sven "FuzzYspo0N" Bergström 
-    
-    http://underscorediscovery.com
-    
+/*  Copyright (c) http://socket.io/get-started/chat/ 
+
     MIT Licensed. See LICENSE for full license.
     Usage : node ninja.js
 */
 
-   var gameport        = process.env.PORT || 8080;
+var gameport        = process.env.PORT || 8080;
 var NICK_NAME_CHANGE_PREFIX = "#nick:";
 var COMMON_MESSAGE_EVENT = "message";
 var COMMON_NICKNAME_EVENT = "nickname";
