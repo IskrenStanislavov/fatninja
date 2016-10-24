@@ -19,27 +19,57 @@
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
 <script src="/socket.io/socket.io.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js">window.</script>
 <script type="text/javascript">
-	var NICK_PREFIX = '#nick:';
-    $('#m').val(NICK_PREFIX);
+  var MESSAGES = {
+    "REQUEST_LOGIN"                   : 'Please enter your nick name to start chatting.<br/>Use: "#nick:" followed by a name',
+    "NOTIFY_USER_CONNECTED"           : ", you just connected! Welcome to our chat.",
+    "NOTIFY_ANOTHER_USER_CONNECTED"   : " has just connected! Welcome him / her.",
+    "NOTIFY_USER_ID_CHANGED"          : " renamed their nickname to: ",
+    "NOTIFY_USER_LEFT"                : ' has left.',
+  };
 	var socket = io();
-	$('form').submit(function(){
-		var message = $('#m').val();
-		if (message.indexOf(NICK_PREFIX) == 0){
-		    socket.emit('nickname', message);
-		} else {
-		    socket.emit('message', message);
-		}
-	    $('#m').val('');
-	    return false;
-	});
-	socket.on('message', function(msg){
-		$('#messages').append($('<li>').text(msg));
-	});
-	socket.on('nickname', function(msg){
-		$('#messages').append($('<li>').text(msg));
-	});
+  socket.on("config", function(data){
+    var CONFIG = JSON.parse(data);
+    var logged = false;
+    var userId = null;
+    $('form').submit(function() {
+        var message = $('#m').val();
+        if (!logged) {
+          socket.emit(CONFIG.EVENTS.LOGIN, message);
+        }
+        else {
+          socket.emit(CONFIG.EVENTS.MESSAGE, {"message":message});
+        }
+        $('#m').val('');
+        return false;
+    });
+    socket.on(CONFIG.ACTIONS.LOGIN, function(user){
+      if (user == null) {//request login
+        console.log("please login");
+        $('#m').val(CONFIG.COMMANDS.LOGIN);
+        $('#messages').remove("li").append($('<li>').text(MESSAGES.REQUEST_LOGIN));
+      } else {// success
+        $('#m').val('');
+        logged = true;
+        userId = user.id;
+        $('#messages').remove("li").append($('<li>').text(userId + MESSAGES.NOTIFY_USER_CONNECTED));
+        socket.emit(CONFIG.EVENTS.USER_POPS);
+      }
+    });
+    socket.on(CONFIG.ACTIONS.USER_POPS, function(user) {
+        if (user.id !== userId) {
+          $('#messages').append($('<li>').text(user.id + MESSAGES.NOTIFY_ANOTHER_USER_CONNECTED));
+        }
+    });
+    socket.on(CONFIG.ACTIONS.MESSAGE, function(data) {
+        // if (data.id !== userId) {
+          $('#messages').append($('<li>').text(data.id + ": " + data.message));
+        // }
+    });
+    window.CONFIG = CONFIG;
+
+  });
 </script>
- </body>
+</body>
 </html>
