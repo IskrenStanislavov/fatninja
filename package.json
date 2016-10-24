@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IskrenStanislavov/ninja.git"
+    "url": "git+https://github.com/IskrenStanislavov/fatninja.git"
   },
   "keywords": [
     "fatninja"
@@ -16,12 +16,13 @@
   "author": "Iskren Stanislavov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/IskrenStanislavov/ninja/issues"
+    "url": "https://github.com/IskrenStanislavov/fatninja/issues"
   },
-  "homepage": "https://github.com/IskrenStanislavov/ninja#readme",
+  "homepage": "https://github.com/IskrenStanislavov/fatninja#readme",
   "devDependencies": {},
   "dependencies": {
     "browser-sync": "^2.10.0",
+    "express": "^4.14.0",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git",
     "gulp": "^3.9.1",
     "hxpixijs": "0.0.25",
