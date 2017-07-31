@@ -1,6 +1,8 @@
 Fat Ninja
 ================
 
+run npm install
+
 simply run http-server
 
 helpful resources:
