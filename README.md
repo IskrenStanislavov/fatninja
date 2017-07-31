@@ -1,9 +1,10 @@
 Fat Ninja
 ================
 
-run npm install
+run `npm install`
+run `npm install http-server -g`
 
-simply run http-server
+run `http-server`
 
 helpful resources:
  - https://github.com/huytd/pixijump
