@@ -19,7 +19,12 @@
     "url": "https://github.com/IskrenStanislavov/ninja/issues"
   },
   "homepage": "https://github.com/IskrenStanislavov/ninja#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/greensock": "^1.15.32",
+    "http-server": "^0.10.0",
+    "phaser-ce": "^2.8.3",
+    "typescript": "^2.4.2"
+  },
   "dependencies": {
     "browser-sync": "^2.10.0",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git",
