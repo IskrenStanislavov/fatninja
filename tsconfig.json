@@ -5,7 +5,7 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "outFile": "www/app.js",
+        "outFile": "www/Main.js",
         "inlineSources": true
 
     },
