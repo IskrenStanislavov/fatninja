@@ -1,1 +1,5 @@
 node_modules
+ts/**/*.js
+ts/**/*.js.map
+www/**/*.js
+www/**/*.js.map

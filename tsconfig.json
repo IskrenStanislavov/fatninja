@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "none",
+        "module": "amd",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -13,6 +13,6 @@
       "ts/**/*"
     ],
     "files": [
-      "../node_modules/phaser-ce/typescript/phaser.comments.d.ts"
+      "./node_modules/phaser-ce/typescript/phaser.d.ts"
     ]
 }
