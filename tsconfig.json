@@ -13,6 +13,7 @@
       "ts/**/*"
     ],
     "files": [
+      "./node_modules/phaser-debug/typescript/phaser.debug.d.ts",
       "./node_modules/phaser-ce/typescript/phaser.d.ts"
     ]
 }

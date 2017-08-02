@@ -13,7 +13,7 @@ export default class Preload extends Phaser.State {
 		console.log("preloader state ready");
 
 		//background for game
-		this.add.sprite(0, 0, "loading_bg");
+		this.add.sprite(0, 0, "preloader");
 
 		this.asset = this.add.sprite(this.game.width / 2, this.game.height / 2, 'preloader');
 		this.asset.anchor.setTo(0.5, 0.5);

@@ -3,7 +3,7 @@ import LevelConfig from '../interfaces/LevelConfig';
 import Player from '../../prefabs/Player';
 import Mouse from '../../prefabs/Mouse';
 export default class Level extends Phaser.State {
-	score:number;
+	public static score:number = 0;
 	map: Phaser.Tilemap;
 	bg: Phaser.TilemapLayer;
 	layer: Phaser.TilemapLayer;
@@ -25,6 +25,9 @@ export default class Level extends Phaser.State {
 	}
 
 	public create() {
+		if ("debug"){
+			this.game.add.plugin(new Phaser.Plugin.Debug(this.game, this.game.plugins));
+		}
 
 		//physics
 		this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -108,8 +111,8 @@ export default class Level extends Phaser.State {
 
 	protected collectCoin(playerRef: Player, coinRef: Phaser.Sprite) {
 		coinRef.kill();
-		this.score++;
-		this.scoreField.setValue(this.score);
+		Level.score++;
+		this.scoreField.setValue(Level.score);
 		this.sfx.play("coin");
 	}
 
@@ -120,9 +123,9 @@ export default class Level extends Phaser.State {
 		if (!playerRef.flashEffect.isRunning) {
 			playerRef.flash();
 			this.sfx.play("hit");
-			if (this.score > 0) {
-				this.score--;
-				this.scoreField.setValue(this.score);
+			if (Level.score > 0) {
+				Level.score--;
+				this.scoreField.setValue(Level.score);
 			}
 		}
 	}

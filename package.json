@@ -30,6 +30,7 @@
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git",
     "gulp": "^3.9.1",
     "hxpixijs": "0.0.25",
+    "phaser-debug": "^1.1.8",
     "pixi.js": "^3.0.11",
     "realtime-multiplayer-in-html5": "^1.1.0",
     "vorlon": "^0.2.1",
